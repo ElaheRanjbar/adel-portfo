@@ -1,0 +1,200 @@
+:host {
+  display: flow-root;
+  background: #1b1b1e;
+}
+.hero {
+  margin-top: 118px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 444px;
+  align-items: start;
+  gap: 80px;
+  min-height: 410px;
+}
+.hero > div:first-child {
+  padding-top: 78px;
+}
+.hero .badge-pill {
+  border: none;
+  padding: 0;
+  background: none;
+  justify-content: flex-start;
+  font-size: 24px;
+  font-weight: 500;
+  margin-bottom: 32px;
+}
+.hero h1 {
+  font-size: 48px;
+  font-weight: 700;
+  line-height: 1.25;
+  margin-bottom: 8px;
+  letter-spacing: -1px;
+}
+.hero h1 .text-gradient {
+  font-size: 48px;
+  letter-spacing: -1px;
+}
+.hero p {
+  font-size: 16px;
+  margin-bottom: 28px;
+}
+.hero-actions {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+.hero-image-wrapper {
+  position: relative;
+  transform: translateX(34px);
+}
+.hero-actions .btn-primary,
+.hero-actions .btn-outline {
+  font-size: 16px;
+  padding: 16px 28px;
+}
+.hero-image-card {
+  width: 444px;
+  height: 410px;
+}
+.hero-image-card img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+.floating-card {
+  position: absolute;
+  background: #232327;
+  padding: 12px;
+  border-radius: 12px;
+}
+.card-top-right {
+  top: 20px;
+  right: 0;
+}
+.card-bottom-left {
+  bottom: 35px;
+  left: 0;
+}
+.partners-bar {
+  margin: 38px 0 130px;
+}
+.partner-logo {
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.partner-logo {
+  display: inline-flex;
+  align-items: center;
+  gap: 16px;
+  font-size: 16px;
+}
+.partner-logo app-icon {
+  color: var(--accent-blue);
+  width: 16px;
+  height: 16px;
+}
+.projects-heading {
+  text-align: center;
+  margin-bottom: 40px;
+}
+.projects-heading h2 {
+  font-family: var(--serif);
+}
+.projects-heading .btn-outline {
+  margin-top: 6px;
+  font-size: 16px;
+  padding: 16px 28px;
+}
+.stacking-cards-container {
+  display: flex;
+  flex-direction: column;
+  gap: 50px;
+}
+.stacking-card-wrapper {
+  position: sticky;
+  top: calc(90px + var(--index) * 20px);
+  z-index: var(--index);
+}
+.project-card:nth-child(2),
+.stacking-card-wrapper:nth-child(2) .project-card {
+  background:
+    linear-gradient(#262629, #262629) padding-box,
+    linear-gradient(110deg, #397bff, #ac27cc) border-box;
+  border-color: transparent;
+}
+.projects-section {
+  margin-bottom: 120px;
+}
+@media (max-width: 1100px) {
+  .hero {
+    grid-template-columns: 1fr 38%;
+    gap: 24px;
+  }
+  .hero-image-card {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 444/410;
+  }
+  .hero h1 .text-gradient {
+    font-size: 54px;
+  }
+  .partners-bar {
+    justify-content: flex-start;
+  }
+}
+@media (max-width: 760px) {
+  .hero {
+    margin-top: 64px;
+    grid-template-columns: 1fr;
+    gap: 36px;
+  }
+  .hero .badge-pill {
+    margin-bottom: 24px;
+    font-size: 18px;
+  }
+  .hero h1 {
+    font-size: 38px;
+  }
+  .hero h1 .text-gradient {
+    font-size: 48px;
+  }
+  .hero p {
+    font-size: 17px;
+  }
+  .hero-image-card {
+    max-width: 444px;
+    margin: auto;
+  }
+  .partners-bar {
+    margin-bottom: 80px;
+    overflow: auto;
+  }
+  .partner-logo {
+    font-size: 16px;
+  }
+  .projects-section {
+    margin-bottom: 80px;
+  }
+}
+
+@media (max-width: 1100px) {
+  .hero-image-wrapper {
+    transform: none;
+  }
+}
+@media (max-width: 760px) {
+  .hero > div:first-child {
+    padding-top: 0;
+  }
+}
+
+@media (max-width: 760px) {
+  .stacking-card-wrapper {
+    top: calc(12px + var(--index) * 8px);
+  }
+}
+@media (max-height: 740px) and (max-width: 760px) {
+  .stacking-card-wrapper {
+    position: relative;
+    top: auto;
+  }
+}

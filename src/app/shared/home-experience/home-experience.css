@@ -1,0 +1,82 @@
+:host {
+  display: block;
+}
+.experience-section {
+  margin-bottom: 120px;
+}
+.experience-section .section-header {
+  text-align: center;
+  margin-bottom: 44px;
+}
+.experience-item {
+  display: flex;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 15px 0;
+  border-bottom: 1px solid var(--card-border);
+}
+.experience-item:last-child {
+  border: none;
+}
+.role-title,
+.company-name {
+  font-size: 28px;
+  line-height: 1.2;
+  font-weight: 700;
+}
+.company-info {
+  text-align: right;
+}
+.period-badge {
+  display: block;
+  color: #a5a5aa;
+  font-size: 20px;
+  line-height: 1.2;
+  margin-top: 6px;
+}
+.cv-action {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 19px;
+  border: 1px solid var(--card-border);
+  border-radius: 24px;
+  margin-top: 22px;
+}
+.cv-action h3 {
+  font-size: 24px;
+  line-height: 1.2;
+  margin-bottom: 6px;
+}
+.cv-action p {
+  color: #a5a5aa;
+  font-size: 20px;
+  line-height: 1.2;
+}
+.cv-action .btn-outline {
+  font-size: 16px;
+}
+@media (max-width: 1100px) {
+  .role-title,
+  .company-name {
+    font-size: 24px;
+  }
+  .period-badge {
+    font-size: 16px;
+  }
+}
+@media (max-width: 760px) {
+  .experience-item {
+    flex-direction: column;
+  }
+  .company-info {
+    text-align: left;
+  }
+  .cv-action {
+    flex-wrap: wrap;
+  }
+  .experience-section {
+    margin-bottom: 80px;
+  }
+}

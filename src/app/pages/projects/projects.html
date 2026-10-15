@@ -1,0 +1,35 @@
+<app-site-header />
+<main class="container projects-main-content">
+  <div class="case-studies-header">
+    <h1>{{ store.data().content.listingTitle }}</h1>
+    <p>{{ store.data().content.listingDescription }}</p>
+  </div>
+  <div class="case-studies-container">
+    @for (project of store.data().caseStudiesList; track $index) {
+      <article class="listing-card">
+        <div class="listing-preview">
+          <img [src]="project.image | mediaUrl" [alt]="project.subtitle" loading="lazy" />
+        </div>
+        <div>
+          <div class="tags-row">
+            @for (tag of project.tags; track $index) {
+              <span class="pill-tag">{{ tag | tagName }}</span>
+            }
+          </div>
+          <h2 class="listing-title">{{ project.title }}</h2>
+          <h3 class="listing-subtitle">{{ project.subtitle }}</h3>
+          <p class="listing-desc">{{ project.description }}</p>
+          <a
+            [portfolioLink]="project.detailUrl || '/project-detail?id=' + project.id"
+            class="btn-view-case"
+            >{{ project.ctaText || store.data().content.viewCaseText }}
+            <span><app-icon name="arrow" /></span
+          ></a>
+        </div>
+      </article>
+    } @empty {
+      <p>No case studies yet.</p>
+    }
+  </div>
+</main>
+<app-site-footer />

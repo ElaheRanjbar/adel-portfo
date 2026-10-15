@@ -1,0 +1,42 @@
+dialog {
+  margin: auto;
+  width: min(460px, calc(100vw - 40px));
+  padding: 28px;
+  background: #0e1625;
+  color: #edf3ff;
+  border: 1px solid #354a6d;
+  border-radius: 20px;
+  font: inherit;
+}
+dialog::backdrop {
+  background: #000a;
+  backdrop-filter: blur(4px);
+}
+h2 {
+  font-size: 1.2rem;
+  margin-bottom: 14px;
+}
+p {
+  color: #b5c3d8;
+  font-size: 0.9rem;
+  line-height: 1.9;
+}
+.dialog-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 24px;
+}
+button {
+  font: inherit;
+  cursor: pointer;
+  padding: 8px 22px;
+  border-radius: 999px;
+  border: 1px solid #354a6d;
+  background: transparent;
+  color: #edf3ff;
+}
+.confirm-action {
+  background: #3579f6;
+  border-color: #3579f6;
+}

@@ -1,0 +1,44 @@
+.collection-header,
+.item-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+.collection-header {
+  margin: 24px 0 16px;
+}
+.collection-item {
+  border: 1px solid #1e2d45;
+  border-radius: 14px;
+  padding: 18px;
+  margin-bottom: 16px;
+  background: #0a101b;
+}
+.item-actions {
+  font-size: 0.8rem;
+  color: #9aa7bc;
+}
+.item-actions div {
+  display: flex;
+  gap: 6px;
+}
+button {
+  cursor: pointer;
+  background: #18243b;
+  color: #c4dcff;
+  border: 1px solid #2b4063;
+  border-radius: 8px;
+  padding: 6px 12px;
+}
+button:disabled {
+  opacity: 0.3;
+  cursor: default;
+}
+.remove {
+  color: #fca5a5;
+}
+.empty {
+  color: #9aa7bc;
+  font-size: 0.85rem;
+}

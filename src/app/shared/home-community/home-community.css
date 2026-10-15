@@ -1,0 +1,123 @@
+:host {
+  display: block;
+  overflow: hidden;
+}
+.section-header {
+  text-align: center;
+  margin-bottom: 40px;
+}
+.testimonials-section {
+  margin-bottom: 120px;
+}
+.testimonial-card {
+  width: 400px;
+  flex-shrink: 0;
+  background: #262629;
+  border: 1px solid var(--card-border);
+  border-radius: 24px;
+  padding: 20px 20px 24px;
+}
+.quote {
+  font-size: 16px;
+  line-height: 1.2;
+}
+.see-more {
+  display: block;
+  margin: 12px 0;
+  color: var(--accent-blue);
+  font-size: 14px;
+  font-weight: 600;
+  padding: 0;
+  border: none;
+  background: none;
+}
+.author {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding-top: 14px;
+  border-top: 1px solid var(--card-border);
+}
+.avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+.initials {
+  display: grid;
+  place-items: center;
+  background: var(--accent-blue);
+}
+.author strong {
+  font-size: 14px;
+}
+.author-role {
+  font-size: 12px;
+  margin-top: 4px;
+}
+.author-link {
+  color: #161618;
+  background: var(--accent-blue);
+  border-radius: 2px;
+  display: flex;
+  margin-left: auto;
+}
+.author-link app-icon {
+  width: 26px;
+  height: 26px;
+}
+.person-section {
+  margin-bottom: 120px;
+}
+.photo-item {
+  width: 376px;
+  height: 514px;
+  flex-shrink: 0;
+  position: relative;
+  overflow: hidden;
+  border-radius: 40px;
+}
+.photo-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.photo-caption {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 78px;
+  display: flex;
+  align-items: flex-end;
+  padding: 0 20px 20px;
+  font-family: var(--serif);
+  font-size: 24px;
+  background: linear-gradient(transparent, #111 45%);
+}
+@media (max-width: 760px) {
+  .testimonials-section {
+    margin-bottom: 80px;
+  }
+  .testimonial-card {
+    width: 310px;
+  }
+  .quote {
+    font-size: 16px;
+  }
+  .photo-item {
+    width: 280px;
+    height: 390px;
+    border-radius: 28px;
+  }
+  .photo-caption {
+    font-size: 20px;
+  }
+  .section-header {
+    margin-bottom: 32px;
+  }
+  .person-section {
+    margin-bottom: 80px;
+  }
+}

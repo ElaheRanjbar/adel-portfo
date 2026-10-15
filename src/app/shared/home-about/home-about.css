@@ -1,0 +1,122 @@
+:host {
+  display: block;
+}
+.about-section {
+  margin-bottom: 120px;
+}
+.about-section .section-header {
+  margin-bottom: 11px;
+}
+.about-lead {
+  white-space: pre-line;
+  font-size: 16px;
+  line-height: 1.2;
+  margin-bottom: 35px;
+}
+.about-grid {
+  display: grid;
+  grid-template-columns: 2fr 3fr;
+  gap: 20px;
+  margin-bottom: 20px;
+}
+.about-card,
+.stat-card {
+  border: 1px solid var(--card-border);
+  border-radius: 40px;
+  overflow: hidden;
+  background: #262629;
+}
+.about-card:first-child {
+  background:
+    linear-gradient(#262629, #262629) padding-box,
+    linear-gradient(110deg, #397bff, #ac27cc) border-box;
+  border-color: transparent;
+}
+.about-card h4,
+.stat-card h4 {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  color: var(--accent-blue);
+  font-family: var(--serif);
+  font-size: 28px;
+  line-height: 1.1;
+  font-weight: 700;
+  padding: 20px;
+  border-bottom: 1px solid var(--card-border);
+}
+.bullet-list {
+  list-style: none;
+  padding: 30px 20px;
+  display: grid;
+  gap: 11px;
+}
+.bullet-list li {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 16px;
+}
+.bullet-list li::before {
+  content: '';
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: var(--accent-blue);
+}
+.skill-pills {
+  padding: 14px 20px 20px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+}
+.skill-pill {
+  padding: 7px 12px;
+  border-radius: 8px;
+  background: #161618;
+  font-size: 16px;
+  line-height: 1.2;
+}
+.skill-pill:last-child {
+  color: var(--accent-blue);
+}
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+.stat-body {
+  padding: 29px 16px;
+  text-align: center;
+  background-size: cover;
+  background-position: center;
+}
+.stat-card .number {
+  font-size: 24px;
+  line-height: 1.2;
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+.stat-card .label {
+  font-size: 20px;
+  line-height: 1.2;
+}
+@media (max-width: 1100px) {
+  .about-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+@media (max-width: 760px) {
+  .about-grid,
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+  .about-lead {
+    line-height: 1.6;
+  }
+  .about-section {
+    margin-bottom: 80px;
+  }
+}

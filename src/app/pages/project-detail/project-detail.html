@@ -1,0 +1,122 @@
+<app-site-header />
+@if (project(); as project) {
+  <main class="container project-detail-container">
+    <section class="detail-hero">
+      <div>
+        <div class="detail-tags-row">
+          @for (tag of project.tags; track $index) {
+            <span class="detail-tag">{{ tag | tagName }}</span>
+          }
+        </div>
+        <h1 class="detail-hero-title">{{ project.title }}</h1>
+        <h2 class="detail-hero-subtitle">{{ project.subtitle }}</h2>
+        <p class="detail-hero-lead">{{ project.leadSummary }}</p>
+      </div>
+      <div class="detail-hero-image-box">
+        @if (project.heroImage) {
+          <img [src]="project.heroImage | mediaUrl" [alt]="project.title" />
+        }
+      </div>
+    </section>
+    <div class="meta-bar">
+      @for (meta of project.meta; track $index) {
+        <div class="meta-item">
+          <div class="meta-label">{{ meta.label }}</div>
+          <div class="meta-value">{{ meta.value }}</div>
+        </div>
+      }
+    </div>
+    <div class="detail-body-grid">
+      <aside class="detail-sidebar">
+        <div class="sidebar-nav-title">{{ store.data().content.overviewTitle }}</div>
+        <ul class="sidebar-nav-list">
+          @for (section of project.sections; track section.id) {
+            <li>
+              <a
+                [routerLink]="[]"
+                queryParamsHandling="preserve"
+                [fragment]="section.id"
+                [class.active]="activeSection() === section.id"
+                >{{ section.navTitle || section.title }}</a
+              >
+            </li>
+          }
+        </ul>
+      </aside>
+      <article class="detail-content">
+        @for (section of project.sections; track section.id) {
+          <section
+            class="narrative-block"
+            [id]="section.id"
+            [class.empty-narrative]="
+              !section.title && !section.paragraphs?.length && !section.subsections?.length
+            "
+          >
+            @if (section.title) {
+              <h2>{{ section.title }}</h2>
+            }
+            @if (section.quote && section.quoteFirst) {
+              <blockquote class="narrative-quote">{{ section.quote }}</blockquote>
+            }
+            @for (paragraph of section.paragraphs; track $index) {
+              <p>{{ paragraph }}</p>
+            }
+            @if (section.quote && !section.quoteFirst) {
+              <blockquote class="narrative-quote">{{ section.quote }}</blockquote>
+            }
+            @for (sub of section.subsections; track $index) {
+              @if (sub.heading) {
+                <h3>{{ sub.heading }}</h3>
+              }
+              @if (sub.text) {
+                <p>{{ sub.text }}</p>
+              }
+              <div class="showcase-image-box">
+                @if (sub.image) {
+                  <img
+                    [src]="sub.image | mediaUrl"
+                    [alt]="sub.heading || section.title"
+                    loading="lazy"
+                  />
+                }
+              </div>
+              @if (sub.caption) {
+                <p class="showcase-caption">{{ sub.caption }}</p>
+              }
+            }
+          </section>
+        }
+      </article>
+    </div>
+    @if (project.nextProject; as next) {
+      <section class="explore-more-section">
+        <h3 class="explore-more-title">{{ store.data().content.exploreTitle }}</h3>
+        <article class="next-work-card">
+          <div class="next-work-preview">
+            <img [src]="next.image | mediaUrl" [alt]="next.title" loading="lazy" />
+          </div>
+          <div>
+            <div class="detail-tags-row">
+              @for (tag of next.tags; track $index) {
+                <span class="detail-tag">{{ tag | tagName }}</span>
+              }
+            </div>
+            <h2 class="next-work-title">{{ next.title }}</h2>
+            <h3 class="next-work-subtitle">{{ next.subtitle }}</h3>
+            <p class="next-work-description">{{ next.description || project.leadSummary }}</p>
+            <a [portfolioLink]="next.link" class="btn-link"
+              >{{ store.data().content.viewCaseText }} <span><app-icon name="arrow" /></span
+            ></a>
+          </div>
+        </article>
+      </section>
+    }
+  </main>
+} @else {
+  <main class="container project-detail-container">
+    <h1>Case study not found</h1>
+    <p>This project is no longer available.</p>
+    <a portfolioLink="/projects" class="btn-link">Browse case studies →</a>
+  </main>
+}
+<app-site-footer [tallBottom]="true" />

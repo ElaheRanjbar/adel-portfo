@@ -1,59 +1,78 @@
-# AdelPortfo
+# Maryam Adel Portfolio — Angular
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 22.0.7.
+پورتفولیوی Angular 22 با سه صفحه‌ی عمومی و پنل کامل مدیریت محتوا. طرح و متن‌ها از خروجی‌های تصویری `Portfo-home.png`، `Prpject list.png` و `Prpject detail.png` پیاده‌سازی شده‌اند. تمام کامپوننت‌ها فایل‌های جداگانه‌ی **HTML، CSS و TypeScript** دارند.
 
-## Development server
-
-To start a local development server, run:
-
-```bash
-ng serve
+```sh
+npm install
+npm start
 ```
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+آدرس پیش‌فرض: `http://localhost:4200`؛ برای پورت دیگر: `npm start -- --port 4301`.
 
-## Code scaffolding
-
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
-
-```bash
-ng generate component component-name
+```sh
+npm run build
+npm test -- --watch=false
 ```
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+خروجی تولیدی: `dist/adel-portfo/browser`. میزبان باید مسیرهای برنامه را به `index.html` برگرداند.
 
-```bash
-ng generate --help
+| مسیر                        | صفحه                                                 |
+| --------------------------- | ---------------------------------------------------- |
+| `/`                         | معرفی، چهار پروژه، درباره‌ی من، سوابق، نظرات و گالری |
+| `/projects`                 | چهار کارت پروژه مطابق تصویر مرجع                     |
+| `/project-detail?id=case-1` | مقاله‌ی کامل جزئیات و فهرست محتوای کناری             |
+| `/admin`                    | پنل مدیریت                                           |
+| `/admin/tags`               | مدیریت مستقل تگ‌ها                                   |
+
+لینک‌های قدیمی `index.html`، `projects.html`، `project-detail.html` و `admin-portal.html` نیز پشتیبانی می‌شوند.
+
+نوار مهارت‌ها، نظرات همکاران و گالری عکس‌ها اسلایدر پیوسته با حرکت خودکار، کنترل دستی و توقف هنگام تعامل دارند. تنظیم کاهش حرکت دستگاه نیز رعایت می‌شود. کارت‌های پروژهٔ صفحهٔ اصلی هنگام اسکرول روی هم قرار می‌گیرند. رابط پنل مدیریت، پیام‌ها و تأیید عملیات فارسی و راست‌به‌چپ است.
+
+## ساختار
+
+```text
+src/app/
+  core/
+    portfolio.models.ts          # مدل‌های داده
+    portfolio.data.ts            # محتوای سه تصویر مرجع
+    portfolio.legacy.ts          # داده‌ی نسخه‌ی قبلی برای ارتقای سازگار
+    portfolio-normalize.ts       # مهاجرت داده و ارتباط تگ‌ها
+    portfolio-store.ts           # نگهداری محتوای سایت
+    media-store.ts               # نگهداری فایل‌های آپلودشده
+  pages/
+    home/                        # html / css / ts
+    projects/                    # html / css / ts
+    project-detail/              # html / css / ts
+    admin/                       # html / css / ts
+  shared/
+    site-header/                 # لوگو و ناوبری
+    site-footer/                 # تماس و شبکه‌های اجتماعی
+    home-about/                  # درباره، مهارت‌ها و کارت‌های اطلاعات
+    home-experience/             # سوابق و رزومه
+    home-community/              # نظرات و گالری
+    admin-fields/                # فیلدهای ویرایش محتوا
+    admin-collection/            # ایجاد، حذف و جابه‌جایی ردیف‌ها
+    media-field/                 # انتخاب URL یا آپلود فایل
+    tag-picker/                  # انتخاب تگ‌های مشترک
+    icon/                        # آیکون‌های SVG
+public/assets/
+  portfolio/                     # تصاویر جداشده از خروجی‌های ارسالی
+  fonts/                         # Inter و Fraunces به همراه مجوزها
 ```
 
-## Building
+عکس‌ها و فونت‌ها محلی‌اند و نمایش پیش‌فرض سه صفحه به Unsplash یا Google Fonts وابسته نیست. تصاویر، برشِ فایل‌های ارسالی هستند؛ بخش‌هایی که خارج از کادر تصویر بوده‌اند قابل بازیابی نیستند. کادرهای آبی خالیِ صفحه‌ی جزئیات مطابق مرجع با CSS نمایش داده می‌شوند؛ می‌توان از پنل برای آن‌ها عکس آپلود کرد. نشانی واقعی تماس و فایل رزومه در اسکرین‌شات‌ها مشخص نیست و از پنل قابل تنظیم است.
 
-To build the project run:
+## پنل مدیریت
 
-```bash
-ng build
-```
+- `/admin/hero`: معرفی، نام، عنوان، توضیحات، عکس، دکمه‌ها و آپلود/تعویض CV.
+- `/admin/header`: عکس لوگو، متن جایگزین، لینک‌های منو و دکمه‌ی تماس.
+- `/admin/projects`: ساخت، ویرایش و حذف کیس‌استادی کامل؛ کارت، معرفی جزئیات، تگ‌ها، متادیتا، عنوان و برچسب کناری بخش‌ها، متن‌ها، نقل‌قول‌ها، تصاویر، کپشن‌ها و پیشنهاد پروژه‌ی بعدی.
+- `/admin/tags`: تگ‌های مشترک؛ تغییر نام در تمام محل‌های استفاده منعکس می‌شود. حذف تگ ارتباط آن را با کارت‌ها و جزئیات نیز حذف می‌کند.
+- `/admin/home-projects`: مدیریت و ترتیب کارت‌های خانه و ارتباط آن‌ها با کیس‌استادی‌ها.
+- `/admin/about`، `/admin/experience`، `/admin/testimonials`، `/admin/photos`، `/admin/partners`، `/admin/footer`، `/admin/content`: ویرایش سایر بخش‌های صفحه‌ی اصلی و عنوان‌ها.
+- `/admin/html`: HTML سفارشی با sanitization داخلی Angular؛ اسکریپت اجرا نمی‌شود.
+- `/admin/backup`: خروجی پشتیبان شامل محتوا و فایل‌های آپلودشده، و بازگردانی به پیش‌فرض‌ها.
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
+**Save All** تغییرات را روی سایت همین مرورگر اعمال می‌کند. **Discard** آخرین نسخه‌ی ذخیره‌شده را برمی‌گرداند. پیش‌نویس در جابه‌جایی بین صفحه‌های پنل باقی می‌ماند، ولی پس از بازنشانی یا بستن صفحه ذخیره نمی‌شود. در ارتقای نسخه‌ی قبلی، بخش‌های نمونه‌ی دست‌نخورده با طرح جدید جایگزین می‌شوند و بخش‌هایی که ادمین ویرایش کرده حفظ می‌شوند.
 
-## Running unit tests
-
-To execute unit tests with the [Vitest](https://vitest.dev/) test runner, use the following command:
-
-```bash
-ng test
-```
-
-## Running end-to-end tests
-
-For end-to-end (e2e) testing, run:
-
-```bash
-ng e2e
-```
-
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
-
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+متن‌ها در `localStorage` و فایل‌ها در `IndexedDB` نگهداری می‌شوند. تصاویر JPG، PNG، WebP، GIF و AVIF تا ۸ مگابایت و رزومه‌ی PDF، DOC و DOCX تا ۱۵ مگابایت پذیرفته می‌شوند. این نسخه فرانت‌اند محلی است؛ احراز هویت و API سرور ندارد و داده‌ها میان دستگاه‌ها مشترک نیستند. پاک کردن داده‌های سایت در مرورگر، محتوا و آپلودهای محلی را حذف می‌کند.

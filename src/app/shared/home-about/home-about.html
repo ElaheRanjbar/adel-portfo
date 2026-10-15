@@ -1,0 +1,40 @@
+<section id="about" class="container about-section">
+  <div class="section-header">
+    <h2 [innerHTML]="store.data().content.aboutTitle"></h2>
+  </div>
+  <p class="about-lead">{{ store.data().about.bio }}</p>
+  <div class="about-grid">
+    <div class="about-card">
+      <h4><app-icon name="users" />{{ store.data().content.mindsetsTitle }}</h4>
+      <ul class="bullet-list">
+        @for (mindset of store.data().about.mindsets; track $index) {
+          <li>{{ mindset }}</li>
+        }
+      </ul>
+    </div>
+    <div class="about-card">
+      <h4><app-icon name="skills" />{{ store.data().content.skillsTitle }}</h4>
+      <div class="skill-pills">
+        @for (skill of store.data().about.skills; track $index) {
+          <span class="skill-pill">{{ skill }}</span>
+        }
+      </div>
+    </div>
+  </div>
+  <div class="stats-grid">
+    @for (stat of store.data().about.stats; track $index) {
+      <div class="stat-card">
+        <h4><app-icon [name]="stat.icon || 'experience'" />{{ stat.title || stat.label }}</h4>
+        <div
+          class="stat-body"
+          [style.background-image]="
+            stat.backgroundImage ? 'url(' + (stat.backgroundImage | mediaUrl) + ')' : null
+          "
+        >
+          <div class="number">{{ stat.value }}</div>
+          <div class="label">{{ stat.label }}</div>
+        </div>
+      </div>
+    }
+  </div>
+</section>

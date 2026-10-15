@@ -1,0 +1,28 @@
+<section id="experience" class="container experience-section">
+  <div class="section-header">
+    <h2 [innerHTML]="store.data().content.experienceTitle"></h2>
+  </div>
+  <div class="experience-list">
+    @for (experience of store.data().experiences; track $index) {
+      <div class="experience-item">
+        <div class="role-title">{{ experience.role }}</div>
+        <div class="company-info">
+          <div class="company-name">{{ experience.company }}</div>
+          <span class="period-badge">{{ experience.period }}</span>
+        </div>
+      </div>
+    }
+  </div>
+  <div class="cv-action">
+    <div>
+      <h3>{{ store.data().content.cvTitle }}</h3>
+      <p>{{ store.data().content.cvDescription }}</p>
+    </div>
+    <a
+      [portfolioLink]="store.data().hero.ctaSecondaryLink"
+      [attr.download]="store.data().hero.cvFileName || null"
+      class="btn-outline"
+      >{{ store.data().hero.ctaSecondaryText }} <app-icon name="download"
+    /></a>
+  </div>
+</section>

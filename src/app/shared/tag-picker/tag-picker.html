@@ -1,0 +1,16 @@
+<fieldset>
+  <legend>تگ‌ها</legend>
+  <div class="tag-options">
+    @for (tag of tags(); track tag.id) {
+      <label class="tag-option" [class.selected]="selected().includes(tag.id)"
+        ><input
+          type="checkbox"
+          [checked]="selected().includes(tag.id)"
+          (change)="toggle(tag.id)"
+        />{{ tag.name }}</label
+      >
+    } @empty {
+      <p>ابتدا از صفحهٔ تگ‌ها، تگ موردنظر را بسازید.</p>
+    }
+  </div>
+</fieldset>

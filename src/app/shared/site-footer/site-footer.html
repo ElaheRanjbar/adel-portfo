@@ -1,0 +1,25 @@
+<footer id="contact">
+  <div class="container footer-cta">
+    <div class="badge-pill">
+      <span class="availability-dot"></span>{{ store.data().footer.badge }}
+    </div>
+    <h2 [innerHTML]="store.data().footer.headline"></h2>
+    <p class="footer-subtext">{{ store.data().footer.subtext }}</p>
+    <div class="social-links">
+      @for (social of store.data().footer.socials; track $index) {
+        <a [href]="social.link" target="_blank" rel="noopener noreferrer" class="social-btn"
+          ><span class="social-icon"><app-icon [name]="socialIcon(social.label)" /></span
+          >{{ social.label }}</a
+        >
+      }
+    </div>
+  </div>
+  <div class="footer-bottom-wrap" [class.tall-bottom]="tallBottom()">
+    <div class="container footer-bottom-bar">
+      <p class="copyright">{{ store.data().footer.copyright }}</p>
+      <a portfolioLink="#top" class="back-to-top"
+        ><app-icon name="top" />{{ store.data().content.topText }}</a
+      >
+    </div>
+  </div>
+</footer>

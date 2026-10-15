@@ -1,0 +1,43 @@
+<div class="slider" role="region" [attr.aria-label]="label()">
+  <div
+    #viewport
+    class="slider-window"
+    tabindex="0"
+    [attr.aria-label]="label() + '. Use the arrow keys to browse.'"
+    (pointerenter)="hover(true)"
+    (pointerleave)="hover(false)"
+    (focusin)="focus(true)"
+    (focusout)="focusOut($event)"
+    (wheel)="hold()"
+    (keydown)="keydown($event)"
+    (pointerdown)="pointerDown($event)"
+    (pointermove)="pointerMove($event)"
+    (pointerup)="pointerUp()"
+    (pointercancel)="pointerUp()"
+    (dragstart)="$event.preventDefault()"
+  >
+    <div class="slider-track" [style.gap.px]="gap()">
+      @for (copy of copies(); track copy) {
+        <div
+          class="slider-group"
+          [style.gap.px]="gap()"
+          [attr.aria-hidden]="copy === 1 ? null : 'true'"
+        >
+          <ng-container [ngTemplateOutlet]="slides()" />
+        </div>
+      }
+    </div>
+  </div>
+  <div class="slider-controls" aria-label="Slider controls">
+    <button type="button" (click)="step(-1)" aria-label="Previous slides">←</button>
+    <button
+      type="button"
+      (click)="paused.set(!paused())"
+      [attr.aria-label]="paused() ? 'Resume automatic scrolling' : 'Pause automatic scrolling'"
+      [attr.aria-pressed]="paused()"
+    >
+      {{ paused() ? '▶' : 'Ⅱ' }}
+    </button>
+    <button type="button" (click)="step(1)" aria-label="Next slides">→</button>
+  </div>
+</div>

@@ -1,0 +1,32 @@
+<header>
+  <div class="container">
+    <nav aria-label="Main navigation">
+      <a portfolioLink="/" class="logo">
+        @if (store.data().header.logoImage) {
+          <img
+            class="site-logo"
+            [src]="store.data().header.logoImage | mediaUrl"
+            [alt]="store.data().header.logoAlt"
+          />
+        } @else {
+          {{ store.data().header.logo }}
+        }
+      </a>
+      <ul class="nav-links">
+        @for (link of store.data().header.navLinks; track $index) {
+          <li>
+            <a
+              [portfolioLink]="link.href"
+              [class.active-nav]="active(link.href)"
+              [attr.aria-current]="active(link.href) ? 'page' : null"
+              >{{ link.label }}</a
+            >
+          </li>
+        }
+      </ul>
+      <a [portfolioLink]="store.data().header.ctaButton.link" class="btn-say-hi">{{
+        store.data().header.ctaButton.text
+      }}</a>
+    </nav>
+  </div>
+</header>

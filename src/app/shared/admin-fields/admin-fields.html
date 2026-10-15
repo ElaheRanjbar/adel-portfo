@@ -1,0 +1,70 @@
+<div class="fields-grid">
+  @for (field of fields(); track field.key) {
+    <div
+      [class.wide]="field.type === 'textarea' || field.type === 'image' || field.type === 'lines'"
+    >
+      @switch (field.type) {
+        @case ('select') {
+          <label
+            >{{ field.label
+            }}<select [ngModel]="value()[field.key]" (ngModelChange)="update(field.key, $event)">
+              @for (option of field.options; track option.value) {
+                <option [value]="option.value">{{ option.label }}</option>
+              }
+            </select></label
+          >
+        }
+        @case ('checkbox') {
+          <label class="checkbox-field"
+            ><input
+              type="checkbox"
+              [ngModel]="!!value()[field.key]"
+              (ngModelChange)="update(field.key, $event)"
+            />{{ field.label }}</label
+          >
+        }
+        @case ('image') {
+          <app-media-field
+            [label]="field.label"
+            [value]="value()[field.key] || ''"
+            (valueChange)="update(field.key, $event)"
+          />
+        }
+        @case ('textarea') {
+          <label
+            >{{ field.label
+            }}<textarea
+              dir="auto"
+              [attr.aria-label]="field.label"
+              rows="3"
+              [ngModel]="value()[field.key]"
+              (ngModelChange)="update(field.key, $event)"
+            ></textarea>
+          </label>
+        }
+        @case ('lines') {
+          <label
+            >{{ field.label }}؛ هر مورد در یک خط<textarea
+              dir="auto"
+              [attr.aria-label]="field.label"
+              rows="5"
+              [ngModel]="lines(value()[field.key])"
+              (ngModelChange)="updateLines(field.key, $event)"
+            ></textarea>
+          </label>
+        }
+        @default {
+          <label
+            >{{ field.label
+            }}<input
+              [attr.aria-label]="field.label"
+              type="text"
+              dir="auto"
+              [ngModel]="value()[field.key]"
+              (ngModelChange)="update(field.key, $event)"
+          /></label>
+        }
+      }
+    </div>
+  }
+</div>
