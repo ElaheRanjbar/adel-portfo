@@ -71,6 +71,24 @@ describe('Portfolio content management', () => {
     expect(harness.routeNativeElement?.querySelectorAll('.project-card').length).toBe(5);
   });
 
+  it('saves rich case study HTML and renders formatted content instead of the old paragraphs', async () => {
+    const harness = await RouterTestingHarness.create();
+    const admin = await harness.navigateByUrl('/admin/projects', Admin);
+    admin.currentDetail!.sections[0].html =
+      '<h3>A rich story</h3><p style="text-align:center">A <strong>clear</strong> result.</p><a href="/brief.pdf" download>Download brief</a><img src="/design.png" alt="Design">';
+    admin.save();
+    await harness.navigateByUrl('/project-detail?id=case-1');
+    const content = harness.routeNativeElement!.querySelector('.narrative-block app-rich-content')!;
+    expect(content.querySelector('strong')?.textContent).toBe('clear');
+    expect(content.querySelector('p')?.style.textAlign).toBe('center');
+    expect(content.querySelector('img')?.getAttribute('src')).toBe('/design.png');
+    expect(content.querySelector('a')?.hasAttribute('download')).toBe(true);
+    expect(
+      JSON.parse(localStorage.getItem('maryam_portfolio_store')!).detailedCaseStudies['case-1']
+        .sections[0].html,
+    ).toContain('A rich story');
+  });
+
   it('keeps drafts across admin pages without publishing until Save All', async () => {
     const harness = await RouterTestingHarness.create();
     const admin = await harness.navigateByUrl('/admin', Admin);

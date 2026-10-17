@@ -221,13 +221,22 @@
                         </button>
                       </div>
                     </div>
-                    <app-admin-fields [value]="section" [fields]="fields.section" />
-                    <app-admin-collection
-                      label="تصویر یا تصمیم طراحی"
-                      [items]="section.subsections!"
-                      [fields]="fields.subsection"
-                      [emptyItem]="{ heading: '', text: '', image: '' }"
-                    />
+                    <app-admin-fields [value]="section" [fields]="fields.sectionMetadata" />
+                    @if (editingSection() === section.id) {
+                      <app-rich-editor
+                        [value]="richHtml.section(section)"
+                        (valueChange)="section.html = $event"
+                      />
+                    } @else {
+                      <button
+                        type="button"
+                        class="admin-btn btn-secondary"
+                        (click)="editingSection.set(section.id)"
+                      >
+                        ویرایش متن، عکس و فایل با CKEditor
+                      </button>
+                      <app-rich-content [html]="richHtml.section(section)" />
+                    }
                   </div>
                 } @empty {
                   <p class="muted">بخش‌های چالش، نقش شما، تصمیم‌های طراحی و نتیجه را اضافه کنید.</p>

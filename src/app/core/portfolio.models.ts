@@ -11,6 +11,7 @@ export interface ProjectCard {
 }
 
 export interface CaseSection {
+  html?: string;
   id: string;
   title: string;
   navTitle?: string;

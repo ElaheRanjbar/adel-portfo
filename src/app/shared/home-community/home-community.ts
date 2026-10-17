@@ -12,6 +12,14 @@ import { Icon } from '../icon/icon';
 export class HomeCommunity {
   readonly store = inject(PortfolioStore);
   readonly expanded = signal<number[]>([]);
+  expandedParagraphs(index: number): string[] {
+    const testimonial = this.store.data().testimonials[index];
+    // The seed testimonials are placeholders; preserve their copy in the reference layout.
+    return testimonial.fullQuote?.trim()
+      ? testimonial.fullQuote.split(/\n+/).filter((paragraph) => paragraph.trim())
+      : Array.from({ length: 3 }, () => testimonial.quote);
+  }
+
   toggle(index: number): void {
     this.expanded.update((items) =>
       items.includes(index) ? items.filter((i) => i !== index) : [...items, index],

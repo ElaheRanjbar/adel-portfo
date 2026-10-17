@@ -1,3 +1,4 @@
+import { createId } from './create-id';
 import { DEFAULT_PORTFOLIO_DATA } from './portfolio.data';
 import { LEGACY_PORTFOLIO_DATA } from './portfolio.legacy';
 import { PortfolioData } from './portfolio.models';
@@ -42,7 +43,7 @@ export function normalizePortfolio(value: Partial<PortfolioData> = {}): Portfoli
       const existing = data.tags.find((t) => t.id === tags[i] || t.name === tags[i]);
       if (existing) tags[i] = existing.id;
       else {
-        const tag = { id: `tag-${data.tags.length + 1}-${crypto.randomUUID()}`, name: tags[i] };
+        const tag = { id: `tag-${data.tags.length + 1}-${createId()}`, name: tags[i] };
         data.tags.push(tag);
         tags[i] = tag.id;
       }

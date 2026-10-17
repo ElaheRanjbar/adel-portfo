@@ -49,39 +49,46 @@
             class="narrative-block"
             [id]="section.id"
             [class.empty-narrative]="
-              !section.title && !section.paragraphs?.length && !section.subsections?.length
+              !section.title &&
+              !section.html &&
+              !section.paragraphs?.length &&
+              !section.subsections?.length
             "
           >
             @if (section.title) {
               <h2>{{ section.title }}</h2>
             }
-            @if (section.quote && section.quoteFirst) {
-              <blockquote class="narrative-quote">{{ section.quote }}</blockquote>
-            }
-            @for (paragraph of section.paragraphs; track $index) {
-              <p>{{ paragraph }}</p>
-            }
-            @if (section.quote && !section.quoteFirst) {
-              <blockquote class="narrative-quote">{{ section.quote }}</blockquote>
-            }
-            @for (sub of section.subsections; track $index) {
-              @if (sub.heading) {
-                <h3>{{ sub.heading }}</h3>
+            @if (section.html !== undefined) {
+              <app-rich-content [html]="section.html" />
+            } @else {
+              @if (section.quote && section.quoteFirst) {
+                <blockquote class="narrative-quote">{{ section.quote }}</blockquote>
               }
-              @if (sub.text) {
-                <p>{{ sub.text }}</p>
+              @for (paragraph of section.paragraphs; track $index) {
+                <p>{{ paragraph }}</p>
               }
-              <div class="showcase-image-box">
-                @if (sub.image) {
-                  <img
-                    [src]="sub.image | mediaUrl"
-                    [alt]="sub.heading || section.title"
-                    loading="lazy"
-                  />
+              @if (section.quote && !section.quoteFirst) {
+                <blockquote class="narrative-quote">{{ section.quote }}</blockquote>
+              }
+              @for (sub of section.subsections; track $index) {
+                @if (sub.heading) {
+                  <h3>{{ sub.heading }}</h3>
                 }
-              </div>
-              @if (sub.caption) {
-                <p class="showcase-caption">{{ sub.caption }}</p>
+                @if (sub.text) {
+                  <p>{{ sub.text }}</p>
+                }
+                <div class="showcase-image-box">
+                  @if (sub.image) {
+                    <img
+                      [src]="sub.image | mediaUrl"
+                      [alt]="sub.heading || section.title"
+                      loading="lazy"
+                    />
+                  }
+                </div>
+                @if (sub.caption) {
+                  <p class="showcase-caption">{{ sub.caption }}</p>
+                }
               }
             }
           </section>

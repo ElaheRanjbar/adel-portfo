@@ -1,3 +1,4 @@
+import { createId } from './create-id';
 import { DestroyRef, Injectable, inject, signal } from '@angular/core';
 
 interface MediaRecord {
@@ -43,7 +44,23 @@ export class MediaStore {
     return this.names()[value] || '';
   }
 
-  async upload(file: File, kind: 'image' | 'document'): Promise<string> {
+  reference(url: string): string {
+    return Object.entries(this.urls()).find(([, value]) => value === url)?.[0] || url;
+  }
+
+  async resolve(value: string): Promise<string> {
+    if (!value.startsWith('asset:')) return value;
+    const cached = this.urls()[value];
+    if (cached) return cached;
+    const record = await this.read(value);
+    if (!record) throw new Error('فایل ذخیره‌شده موجود نیست؛ آن را دوباره آپلود کنید.');
+    const url = URL.createObjectURL(record.blob);
+    this.names.update((names) => ({ ...names, [value]: record.name }));
+    this.urls.update((urls) => ({ ...urls, [value]: url }));
+    return url;
+  }
+
+  async upload(file: File, kind: 'image' | 'document' | 'attachment'): Promise<string> {
     const imageTypes = ['image/jpeg', 'image/png', 'image/webp', 'image/gif', 'image/avif'];
     if (kind === 'image' && !imageTypes.includes(file.type))
       throw new Error('یک تصویر با قالب JPG، PNG، WebP، GIF یا AVIF انتخاب کنید.');
@@ -53,9 +70,9 @@ export class MediaStore {
       throw new Error(
         kind === 'image'
           ? 'حجم تصویر باید کمتر از ۸ مگابایت باشد.'
-          : 'حجم رزومه باید کمتر از ۱۵ مگابایت باشد.',
+          : 'حجم فایل باید کمتر از ۱۵ مگابایت باشد.',
       );
-    const record = { id: `asset:${crypto.randomUUID()}`, blob: file, name: file.name };
+    const record = { id: `asset:${createId()}`, blob: file, name: file.name };
     this.pending.update((count) => count + 1);
     try {
       await this.write(record);

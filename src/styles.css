@@ -78,7 +78,7 @@
   box-sizing: border-box;
 }
 html {
-  scroll-padding-top: 24px;
+  scroll-padding-top: 148px;
   scrollbar-width: none;
 }
 html::-webkit-scrollbar {
@@ -224,7 +224,9 @@ app-site-header nav {
   align-items: center;
   gap: 40px;
   padding: 20px;
-  background: var(--card-bg);
+  background:
+    linear-gradient(var(--card-bg), var(--card-bg)) padding-box,
+    linear-gradient(110deg, #397bff, #ac27cc) border-box;
   border: 1px solid #353539;
   border-radius: 40px;
 }
@@ -315,9 +317,12 @@ app-site-header nav {
   height: 26px;
 }
 .project-card:hover,
+.project-card:focus-within,
 .listing-card:hover,
-.next-work-card:hover {
-  border-color: #527fff;
+.listing-card:focus-within,
+.next-work-card:hover,
+.next-work-card:focus-within {
+  border-color: transparent;
 }
 .badge-pill {
   display: inline-flex;
@@ -360,6 +365,9 @@ app-site-header nav {
   }
 }
 @media (max-width: 760px) {
+  html {
+    scroll-padding-top: 164px;
+  }
   .container {
     width: calc(100% - 40px);
   }
@@ -434,5 +442,135 @@ app-site-header nav {
     animation: none !important;
     transition: none !important;
     scroll-behavior: auto !important;
+  }
+}
+
+/* Shared HTML typography for case study articles and the admin preview. */
+.rich-content {
+  font-family: Inter, Vazirmatn, Arial, sans-serif;
+  font-size: 16px;
+  line-height: 1.75;
+  overflow-wrap: anywhere;
+  display: flow-root;
+}
+.rich-content > * + * {
+  margin-top: 16px;
+}
+.rich-content h2 {
+  font-family: var(--serif);
+  font-size: 32px;
+  line-height: 1.3;
+}
+.rich-content h3 {
+  font-size: 24px;
+  line-height: 1.4;
+}
+.rich-content h4 {
+  font-size: 20px;
+}
+.rich-content p {
+  white-space: normal;
+  font-size: inherit;
+  line-height: inherit;
+}
+.rich-content ul,
+.rich-content ol {
+  padding-inline-start: 28px;
+}
+.rich-content a {
+  color: var(--accent-blue);
+  text-decoration: underline;
+}
+.rich-content img {
+  display: block;
+  max-width: 100%;
+  height: auto;
+  border-radius: 12px;
+}
+.rich-content figure {
+  max-width: 100%;
+  margin-block: 24px;
+}
+.rich-content figure.image {
+  display: table;
+  margin-inline: auto;
+}
+.rich-content figure.image img {
+  width: 100%;
+}
+.rich-content figcaption {
+  display: table-caption;
+  caption-side: bottom;
+  padding: 8px;
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 14px;
+}
+.rich-content .image-style-side,
+.rich-content .image-style-align-right {
+  float: right;
+  max-width: 50%;
+  margin-left: 20px;
+}
+.rich-content .image-style-align-left {
+  float: left;
+  max-width: 50%;
+  margin-right: 20px;
+}
+.rich-content .table {
+  overflow-x: auto;
+}
+.rich-content table {
+  border-collapse: collapse;
+  width: 100%;
+}
+.rich-content td,
+.rich-content th {
+  border: 1px solid var(--card-border);
+  padding: 10px;
+  min-width: 48px;
+}
+.rich-content blockquote {
+  border-inline-start: 3px solid var(--accent-blue);
+  padding: 12px 20px;
+}
+.admin-body .rich-content {
+  margin-top: 20px;
+  max-height: 260px;
+  overflow: auto;
+  padding: 16px;
+  border: 1px solid #31394a;
+  border-radius: 8px;
+}
+.rich-editor-shell .ck-editor {
+  color: #20232b;
+  direction: ltr;
+}
+.rich-editor-shell .ck-content {
+  min-height: 320px;
+  max-height: 650px;
+  overflow-y: auto;
+  font-family: Inter, Vazirmatn, Arial, sans-serif;
+  line-height: 1.65;
+}
+.rich-editor-shell .ck-content ul,
+.rich-editor-shell .ck-content ol {
+  padding-inline-start: 24px;
+}
+.rich-editor-shell .ck-content h2,
+.rich-editor-shell .ck-content h3 {
+  color: #20232b;
+}
+.rich-editor-shell .ck-source-editing-area textarea {
+  min-height: 320px;
+  color: #20232b;
+}
+@media (max-width: 760px) {
+  .rich-content .image-style-side,
+  .rich-content .image-style-align-right,
+  .rich-content .image-style-align-left {
+    float: none;
+    max-width: 100%;
+    margin-inline: auto;
   }
 }

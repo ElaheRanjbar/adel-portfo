@@ -22,9 +22,14 @@
       </div>
     </div>
     <div class="hero-image-wrapper">
-      <div class="hero-image-card">
+      <div
+        class="hero-image-card"
+        [class.original-portrait]="store.data().hero.profileImage === '/assets/portfolio/maryam-portrait.webp'"
+      >
         <img [src]="store.data().hero.profileImage | mediaUrl" [alt]="store.data().hero.name" />
       </div>
+      <img class="hero-decoration hero-decoration-figma" src="/assets/portfolio/hero-figma.svg" alt="" aria-hidden="true" />
+      <img class="hero-decoration hero-decoration-design" src="/assets/portfolio/hero-design.svg" alt="" aria-hidden="true" />
       @for (badge of store.data().hero.badges; track $index) {
         <div class="floating-card {{ badge.positionClass }}">
           {{ badge.icon }} {{ badge.label }}

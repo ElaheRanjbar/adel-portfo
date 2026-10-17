@@ -28,6 +28,11 @@
               {
                 "glob": "**/*",
                 "input": "public"
+              },
+              {
+                "glob": "ckeditor5.css",
+                "input": "node_modules/ckeditor5/dist",
+                "output": "assets/ckeditor"
               }
             ],
             "styles": ["src/styles.css"]

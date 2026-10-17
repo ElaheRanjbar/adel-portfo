@@ -1,5 +1,9 @@
 :host {
   display: block;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  padding-top: 40px;
 }
 
 .site-logo {
@@ -8,4 +12,14 @@
   max-width: 150px;
   height: 52px;
   object-fit: contain;
+}
+
+:host header {
+  margin-top: 0;
+}
+
+@media (max-width: 760px) {
+  :host {
+    padding-top: 12px;
+  }
 }

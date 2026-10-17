@@ -1,3 +1,7 @@
+import { RichEditor } from '../../shared/rich-editor/rich-editor';
+import { RichContent } from '../../shared/rich-content/rich-content';
+import { RichHtml } from '../../core/rich-html';
+import { createId } from '../../core/create-id';
 import { AdminConfirm, ConfirmationRequest } from '../../shared/admin-confirm/admin-confirm';
 import { Component, OnDestroy, computed, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
@@ -19,6 +23,8 @@ import { FIELDS } from './admin-fields-config';
 @Component({
   selector: 'app-admin',
   imports: [
+    RichEditor,
+    RichContent,
     AdminConfirm,
     FormsModule,
     PortfolioLink,
@@ -47,6 +53,8 @@ export class Admin implements OnDestroy {
   readonly toast = signal('');
   readonly confirmation = signal<ConfirmationRequest | null>(null);
   private confirmationAction?: () => void;
+  readonly richHtml = inject(RichHtml);
+  readonly editingSection = signal('');
   readonly selectedId = signal('');
   readonly exporting = signal(false);
   readonly fields = FIELDS;
@@ -116,7 +124,7 @@ export class Admin implements OnDestroy {
   }
 
   addProject(): void {
-    const id = `case-${crypto.randomUUID()}`;
+    const id = `case-${createId()}`;
     const project: ProjectCard = {
       id,
       title: 'پروژهٔ جدید',
@@ -173,7 +181,7 @@ export class Admin implements OnDestroy {
 
   addHomeProject(): void {
     this.data.homeProjects.push({
-      id: `home-${crypto.randomUUID()}`,
+      id: `home-${createId()}`,
       title: 'پروژهٔ جدید',
       subtitle: '',
       description: '',
@@ -186,7 +194,7 @@ export class Admin implements OnDestroy {
 
   addSection(detail: CaseStudy): void {
     detail.sections.push({
-      id: `section-${crypto.randomUUID()}`,
+      id: `section-${createId()}`,
       title: 'بخش جدید',
       paragraphs: [],
       quote: '',
@@ -219,7 +227,7 @@ export class Admin implements OnDestroy {
       this.notify('یک نام تازه و غیرتکراری برای تگ وارد کنید.');
       return;
     }
-    this.data.tags.push({ id: `tag-${crypto.randomUUID()}`, name });
+    this.data.tags.push({ id: `tag-${createId()}`, name });
     this.newTag = '';
   }
   deleteTag(id: string): void {

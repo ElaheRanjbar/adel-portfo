@@ -1,3 +1,4 @@
+import { RichContent } from '../../shared/rich-content/rich-content';
 import { Icon } from '../../shared/icon/icon';
 import {
   Component,
@@ -20,7 +21,16 @@ import { SiteFooter } from '../../shared/site-footer/site-footer';
 
 @Component({
   selector: 'app-project-detail',
-  imports: [Icon, MediaUrl, TagName, SiteHeader, SiteFooter, PortfolioLink, RouterLink],
+  imports: [
+    RichContent,
+    Icon,
+    MediaUrl,
+    TagName,
+    SiteHeader,
+    SiteFooter,
+    PortfolioLink,
+    RouterLink,
+  ],
   templateUrl: './project-detail.html',
   styleUrl: './project-detail.css',
 })

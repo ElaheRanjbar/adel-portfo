@@ -5,32 +5,25 @@
   <app-auto-slider label="Client testimonials" [speed]="24"
     ><ng-template>
       @for (testimonial of store.data().testimonials; track $index; let i = $index) {
-        <article class="testimonial-card">
-          <p class="quote">
-            “{{
-              expanded().includes(i) && testimonial.fullQuote
-                ? testimonial.fullQuote
-                : testimonial.quote
-            }}”
-          </p>
-          @if (testimonial.fullQuote) {
-            <button
-              type="button"
-              class="see-more"
-              (click)="toggle(i)"
-              [attr.aria-expanded]="expanded().includes(i)"
-            >
-              {{ expanded().includes(i) ? 'Show less' : store.data().content.testimonialMoreText }}
-            </button>
-          } @else {
-            <a
-              [href]="testimonial.link || 'https://www.linkedin.com'"
-              target="_blank"
-              rel="noopener"
-              class="see-more"
-              >{{ store.data().content.testimonialMoreText }}</a
-            >
-          }
+        <article class="testimonial-card" [class.is-expanded]="expanded().includes(i)">
+          <div class="quote">
+            @if (expanded().includes(i)) {
+              @for (paragraph of expandedParagraphs(i); track $index) {
+                <p>“{{ paragraph }}”</p>
+              }
+            } @else {
+              <p>“{{ testimonial.quote }}”</p>
+            }
+          </div>
+          <button
+            type="button"
+            class="see-more"
+            (click)="toggle(i)"
+            [attr.aria-expanded]="expanded().includes(i)"
+            [attr.aria-label]="(expanded().includes(i) ? 'See less of ' : 'See more of ') + testimonial.name + ' testimonial'"
+          >
+            {{ expanded().includes(i) ? 'See less' : store.data().content.testimonialMoreText }}
+          </button>
           <div class="author">
             @if (testimonial.image) {
               <img

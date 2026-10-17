@@ -1,0 +1,24 @@
+<div class="rich-editor-shell" (input)="syncSource()">
+  <div class="editor-actions">
+    <label class="attachment-button" [class.disabled]="!ready() || uploading() || sourceMode()">
+      {{ uploading() ? 'در حال افزودن فایل…' : '＋ افزودن فایل پیوست' }}
+      <input
+        type="file"
+        multiple
+        [disabled]="!ready() || uploading() || sourceMode()"
+        (change)="attach($event)"
+        aria-label="افزودن فایل پیوست"
+      />
+    </label>
+    <span
+      >عکس را با دکمهٔ تصویر، کشیدن یا چسباندن اضافه کنید؛ کد HTML از Source قابل ویرایش است.</span
+    >
+  </div>
+  @if (!ready() && !error()) {
+    <p role="status">در حال بارگذاری ویرایشگر…</p>
+  }
+  @if (error()) {
+    <p role="alert" class="editor-error">{{ error() }}</p>
+  }
+  <div #editorHost></div>
+</div>

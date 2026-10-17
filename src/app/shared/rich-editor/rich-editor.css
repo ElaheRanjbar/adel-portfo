@@ -1,0 +1,41 @@
+:host {
+  display: block;
+  min-width: 0;
+}
+.rich-editor-shell {
+  margin-top: 16px;
+}
+.editor-actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+.editor-actions span {
+  color: #a5aec0;
+  font-size: 13px;
+}
+.attachment-button {
+  position: relative;
+  display: inline-flex;
+  padding: 10px 14px;
+  background: #284f9e;
+  border-radius: 8px;
+  color: white;
+  cursor: pointer;
+}
+.attachment-button input {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  opacity: 0;
+  cursor: pointer;
+}
+.attachment-button.disabled {
+  opacity: 0.5;
+}
+.editor-error {
+  color: #ffadb3;
+  overflow-wrap: anywhere;
+}

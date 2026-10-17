@@ -24,12 +24,14 @@
   border: 1px solid var(--card-border);
   border-radius: 40px;
   overflow: hidden;
-  background: #262629;
-}
-.about-card:first-child {
   background:
     linear-gradient(#262629, #262629) padding-box,
     linear-gradient(110deg, #397bff, #ac27cc) border-box;
+}
+.about-card:hover,
+.about-card:focus-within,
+.stat-card:hover,
+.stat-card:focus-within {
   border-color: transparent;
 }
 .about-card h4,

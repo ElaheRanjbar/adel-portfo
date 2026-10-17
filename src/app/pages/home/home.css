@@ -111,15 +111,8 @@
 }
 .stacking-card-wrapper {
   position: sticky;
-  top: calc(90px + var(--index) * 20px);
+  top: calc(148px + var(--index) * 20px);
   z-index: var(--index);
-}
-.project-card:nth-child(2),
-.stacking-card-wrapper:nth-child(2) .project-card {
-  background:
-    linear-gradient(#262629, #262629) padding-box,
-    linear-gradient(110deg, #397bff, #ac27cc) border-box;
-  border-color: transparent;
 }
 .projects-section {
   margin-bottom: 120px;
@@ -189,12 +182,67 @@
 
 @media (max-width: 760px) {
   .stacking-card-wrapper {
-    top: calc(12px + var(--index) * 8px);
+    top: calc(164px + var(--index) * 8px);
   }
 }
 @media (max-height: 740px) and (max-width: 760px) {
   .stacking-card-wrapper {
     position: relative;
     top: auto;
+  }
+}
+
+/* Rebuild the portrait backdrop beneath the cutouts for the separate SVG badges. */
+.original-portrait {
+  position: relative;
+  isolation: isolate;
+}
+.original-portrait::before {
+  content: '';
+  position: absolute;
+  inset: 0.49% 7.66% 3.17% 11.71%;
+  z-index: -1;
+  border-radius: 11%;
+  background: #b0caff;
+  background-image:
+    linear-gradient(to right, transparent calc(100% - 1px), #ffffff60 0),
+    linear-gradient(to bottom, transparent calc(100% - 1px), #ffffff60 0);
+  background-size: 27.93% 25.25%;
+  background-position: -6.15% 0;
+  box-shadow: 10px 10px 0 -1px #242426;
+}
+.original-portrait img {
+  clip-path: polygon(0 0, 78% 0, 78% 30%, 100% 30%, 100% 100%, 0 100%, 0 64%, 23% 64%, 23% 36%, 0 36%);
+}
+.hero-decoration {
+  position: absolute;
+  width: 22%;
+  height: auto;
+  pointer-events: none;
+  will-change: transform;
+}
+.hero-decoration-figma {
+  left: 1.5%;
+  top: 38%;
+  animation: float-figma 5s ease-in-out infinite;
+}
+.hero-decoration-design {
+  right: 1%;
+  top: 2%;
+  animation: float-design 5.8s ease-in-out infinite;
+}
+@keyframes float-figma {
+  0%, 100% { transform: translate(0, 0) rotate(-12deg); }
+  50% { transform: translate(4px, -8px) rotate(-7deg); }
+}
+@keyframes float-design {
+  0%, 100% { transform: translate(0, 0) rotate(12deg); }
+  50% { transform: translate(-4px, 7px) rotate(7deg); }
+}
+@media (max-width: 760px) {
+  .hero-image-wrapper {
+    width: 100%;
+    max-width: 444px;
+    margin-inline: auto;
   }
 }

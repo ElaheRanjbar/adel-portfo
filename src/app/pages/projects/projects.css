@@ -24,15 +24,6 @@
   display: grid;
   gap: 20px;
 }
-.listing-card {
-  background: #1b1b1e;
-}
-.listing-card:nth-child(2) {
-  background:
-    linear-gradient(#1b1b1e, #1b1b1e) padding-box,
-    linear-gradient(110deg, #397bff, #ac27cc) border-box;
-  border-color: transparent;
-}
 @media (max-width: 760px) {
   .projects-main-content {
     padding-top: 70px;

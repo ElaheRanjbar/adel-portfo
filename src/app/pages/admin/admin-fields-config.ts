@@ -63,6 +63,11 @@ export const FIELDS = {
     { key: 'label', label: 'عنوان اطلاعات، مانند زمان‌بندی، نقش یا مشتری' },
     { key: 'value', label: 'مقدار' },
   ],
+  sectionMetadata: [
+    { key: 'id', label: 'شناسهٔ پیوند بخش (لاتین، یکتا و بدون فاصله)' },
+    { key: 'title', label: 'عنوان بخش' },
+    { key: 'navTitle', label: 'عنوان فهرست کناری (اختیاری)' },
+  ],
   section: [
     { key: 'id', label: 'شناسهٔ پیوند بخش (لاتین، یکتا و بدون فاصله)' },
     { key: 'title', label: 'عنوان بخش' },
