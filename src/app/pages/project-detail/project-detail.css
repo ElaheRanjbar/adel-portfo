@@ -116,7 +116,7 @@
 .explore-more-title {
   font-family: var(--serif);
   font-weight: 700;
-  font-size: 48px;
+  font-size: 40px;
   letter-spacing: -1px;
   line-height: 1.15;
   margin-bottom: 18px;
@@ -216,22 +216,42 @@
     grid-template-columns: 1fr;
   }
   .detail-sidebar {
-    position: static;
-    overflow: auto;
+    position: sticky;
+    top: 98px;
+    z-index: 20;
+    min-width: 0;
+    width: 100%;
+    padding-top: 12px;
+    background: var(--bg-dark);
   }
   .sidebar-nav-title {
-    margin-bottom: 12px;
+    margin-bottom: 8px;
+    line-height: 1.3;
   }
   .sidebar-nav-list {
     display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+    scrollbar-width: thin;
     border: none;
-    white-space: nowrap;
-    padding-bottom: 12px;
+    padding: 4px 2px 12px;
+  }
+  .sidebar-nav-list li {
+    flex: 0 0 auto;
   }
   .sidebar-nav-list a {
+    display: inline-flex;
+    width: max-content;
+    white-space: nowrap;
+    padding: 10px 14px;
+    margin: 0;
     border: 1px solid #444448;
     border-radius: 999px;
-    margin-right: 8px;
+    line-height: 1.3;
+  }
+  .narrative-block {
+    scroll-margin-top: 48px;
   }
   .narrative-block h2,
   .explore-more-title {

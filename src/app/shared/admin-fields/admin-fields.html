@@ -56,6 +56,7 @@
         @case ('icon') {
           <app-media-field
             kind="icon"
+            [defaultValue]="field.defaultFor?.(value()) || ''"
             [label]="field.label"
             [help]="field.help || ''"
             [value]="value()[field.key] || ''"

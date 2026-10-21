@@ -35,6 +35,7 @@
               <a
                 [portfolioLink]="'#' + section.id"
                 [class.active]="activeSection() === section.id"
+                [attr.aria-current]="activeSection() === section.id ? 'location' : null"
                 >{{ section.navTitle || section.title }}</a
               >
             </li>

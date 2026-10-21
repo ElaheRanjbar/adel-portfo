@@ -1,7 +1,7 @@
 <header>
   <div class="container">
     <nav aria-label="Main navigation">
-      <a portfolioLink="/" class="logo">
+      <a portfolioLink="/" class="logo" aria-label="Home">
         @if (store.data().header.logoImage) {
           <img
             class="site-logo"
@@ -27,6 +27,71 @@
       <a [portfolioLink]="store.data().header.ctaButton.link" class="btn-say-hi">{{
         store.data().header.ctaButton.text
       }}</a>
+      <button
+        type="button"
+        class="menu-toggle"
+        aria-label="Open menu"
+        aria-controls="mobile-navigation"
+        [attr.aria-expanded]="menuOpen()"
+        (click)="openMenu()"
+      >
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 7h18M3 12h18M3 17h18" /></svg>
+      </button>
     </nav>
   </div>
 </header>
+
+<dialog
+  #mobileMenu
+  id="mobile-navigation"
+  class="mobile-menu"
+  aria-label="Mobile navigation"
+  (close)="onMenuClosed()"
+>
+  <div class="mobile-menu-header">
+    <a portfolioLink="/" class="logo" aria-label="Home" (click)="closeMenu()">
+      @if (store.data().header.logoImage) {
+        <img
+          class="site-logo"
+          [src]="store.data().header.logoImage | mediaUrl"
+          [alt]="store.data().header.logoAlt"
+        />
+      } @else {
+        {{ store.data().header.logo }}
+      }
+    </a>
+    <button
+      type="button"
+      class="menu-close"
+      aria-label="Close menu"
+      (click)="closeMenu()"
+      autofocus
+    >
+      <svg viewBox="0 0 24 24" aria-hidden="true">
+        <circle cx="12" cy="12" r="10" />
+        <path d="m9 9 6 6m0-6-6 6" />
+      </svg>
+    </button>
+  </div>
+  <nav aria-label="Mobile main navigation">
+    <ul class="mobile-nav-links">
+      @for (link of store.data().header.navLinks; track $index) {
+        <li>
+          <a
+            [portfolioLink]="link.href"
+            [class.active-nav]="active(link.href)"
+            [attr.aria-current]="active(link.href) ? 'page' : null"
+            (click)="closeMenu()"
+            >{{ link.label }}</a
+          >
+        </li>
+      }
+    </ul>
+    <a
+      [portfolioLink]="store.data().header.ctaButton.link"
+      class="mobile-contact"
+      (click)="closeMenu()"
+      >{{ store.data().header.ctaButton.text }}</a
+    >
+  </nav>
+</dialog>

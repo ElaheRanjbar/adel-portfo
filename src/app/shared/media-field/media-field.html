@@ -45,7 +45,7 @@
         (click)="valueChange.emit(defaultValue()); fileNameChange.emit('')"
         [disabled]="value() === defaultValue()"
       >
-        Use default SVG
+        {{ kind() === 'svg' ? 'Use default SVG' : 'Use default image' }}
       </button>
     } @else if (value()) {
       <button type="button" (click)="valueChange.emit(''); fileNameChange.emit('')">

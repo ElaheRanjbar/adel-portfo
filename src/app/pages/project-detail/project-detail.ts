@@ -47,8 +47,13 @@ export class ProjectDetail {
             '.narrative-block:not(.empty-narrative)',
           ),
         );
+        const sidebar = this.element.nativeElement.querySelector<HTMLElement>('.detail-sidebar');
+        const threshold =
+          window.matchMedia('(max-width: 760px)').matches && sidebar
+            ? sidebar.getBoundingClientRect().bottom + 24
+            : 160;
         const current =
-          sections.filter((section) => section.getBoundingClientRect().top <= 160).at(-1) ||
+          sections.filter((section) => section.getBoundingClientRect().top <= threshold).at(-1) ||
           sections[0];
         if (current) this.activeSection.set(current.id);
       };

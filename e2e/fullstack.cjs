@@ -175,7 +175,7 @@ let server, browser;
       (image) => image.complete && image.naturalWidth > 0,
     ),
   );
-  await badges.getByRole('button', { name: 'Use default SVG', exact: true }).first().click();
+  await badges.getByRole('button', { name: 'Use default image', exact: true }).first().click();
   await save(page);
   assert.equal((await snapshot()).data.hero.badges[0].image, '/assets/portfolio/hero-figma.png');
   await badgeVisitor.close();

@@ -76,6 +76,11 @@
   .cv-action {
     flex-wrap: wrap;
   }
+  .cv-action .btn-outline {
+    width: 100%;
+    justify-content: center;
+    text-align: center;
+  }
   .experience-section {
     margin-bottom: 80px;
   }

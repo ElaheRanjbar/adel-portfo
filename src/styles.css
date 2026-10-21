@@ -212,12 +212,12 @@ app-site-header nav {
   height: 24px;
 }
 .section-header h2 {
-  font-size: 48px;
+  font-size: 40px;
   line-height: 1.25;
   font-weight: 700;
 }
 .section-header p {
-  margin-top: 12px;
+  margin: 12px 0;
   color: var(--text-muted);
   font-size: 16px;
 }
@@ -533,7 +533,7 @@ app-site-header nav {
 .rich-content th {
   border: 1px solid var(--card-border);
   padding: 10px;
-  min-width: 48px;
+  min-width: 40px;
 }
 .rich-content blockquote {
   border-inline-start: 3px solid var(--accent-blue);
@@ -606,5 +606,19 @@ a.detail-tag:hover {
   }
 }
 
-.resume-download-error { color: #ffaaaa; font-size: 13px; max-width: 280px; }
-a[resumeDownload][aria-disabled="true"] { opacity: .55; cursor: not-allowed; }
+.resume-download-error {
+  color: #ffaaaa;
+  font-size: 13px;
+  max-width: 280px;
+}
+a[resumeDownload][aria-disabled='true'] {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+app-home .hero-actions :is(.btn-primary, .btn-outline):is(:hover, :focus-visible) {
+  border-color: transparent;
+  background:
+    linear-gradient(var(--hero-button-bg), var(--hero-button-bg)) padding-box,
+    linear-gradient(110deg, #397bff, #ac27cc) border-box;
+}

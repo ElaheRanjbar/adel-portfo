@@ -101,9 +101,7 @@
           <h2 class="listing-title">{{ project.title }}</h2>
           <h3 class="listing-subtitle">{{ project.subtitle }}</h3>
           <p class="listing-desc">{{ project.description }}</p>
-          <a
-            [portfolioLink]="project.detailUrl || '/project-detail?id=' + project.id"
-            class="btn-view-case"
+          <a [portfolioLink]="'/project-detail?id=' + project.id" class="btn-view-case"
             >{{ project.ctaText || store.data().content.viewCaseText }}
             <span><app-icon name="arrow" /></span
           ></a>
