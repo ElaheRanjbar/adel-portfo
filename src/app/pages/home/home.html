@@ -1,6 +1,5 @@
 <app-site-header />
 <main>
-  <div id="custom-html-mount" [innerHTML]="store.data().customHtmlEmbed"></div>
   <section class="hero container">
     <div>
       <div class="badge-pill">{{ store.data().hero.badge }}</div>
@@ -13,33 +12,44 @@
         <a [portfolioLink]="store.data().hero.ctaPrimaryLink" class="btn-primary"
           >{{ store.data().hero.ctaPrimaryText }}<app-icon name="arrow"
         /></a>
-        <a
-          [portfolioLink]="store.data().hero.ctaSecondaryLink"
-          [attr.download]="store.data().hero.cvFileName || null"
-          class="btn-outline"
+        <a resumeDownload #resume="resumeDownload" class="btn-outline"
           >{{ store.data().hero.ctaSecondaryText }} <app-icon name="download"
         /></a>
+        @if (resume.error()) {
+          <span class="resume-download-error" role="alert">{{ resume.error() }}</span>
+        }
       </div>
     </div>
     <div class="hero-image-wrapper">
       <div
         class="hero-image-card"
-        [class.original-portrait]="store.data().hero.profileImage === '/assets/portfolio/maryam-portrait.webp'"
+        [class.original-portrait]="
+          store.data().hero.profileImage === '/assets/portfolio/maryam-portrait.webp'
+        "
       >
         <img [src]="store.data().hero.profileImage | mediaUrl" [alt]="store.data().hero.name" />
       </div>
-      <img class="hero-decoration hero-decoration-figma" src="/assets/portfolio/hero-figma.svg" alt="" aria-hidden="true" />
-      <img class="hero-decoration hero-decoration-design" src="/assets/portfolio/hero-design.svg" alt="" aria-hidden="true" />
       @for (badge of store.data().hero.badges; track $index) {
-        <div class="floating-card {{ badge.positionClass }}">
-          {{ badge.icon }} {{ badge.label }}
-        </div>
+        @if (badge.image || !badge.icon) {
+          <img
+            class="hero-decoration"
+            [class.hero-decoration-figma]="badge.positionClass === 'card-bottom-left'"
+            [class.hero-decoration-design]="badge.positionClass === 'card-top-right'"
+            [src]="badge.image || defaultBadgeImage(badge.positionClass) | mediaUrl"
+            alt=""
+            aria-hidden="true"
+          />
+        } @else {
+          <div class="floating-card {{ badge.positionClass }}">
+            {{ badge.icon }} {{ badge.label }}
+          </div>
+        }
       }
     </div>
   </section>
   <div class="container">
     <div class="partners-bar">
-      <app-auto-slider label="Design skills" [speed]="34" [gap]="24"
+      <app-auto-slider label="Design skills" [clickToPause]="false" [speed]="34" [gap]="24"
         ><ng-template>
           @for (partner of store.data().partners; track $index) {
             <span class="partner-logo"><app-icon name="sparkle" />{{ partner }}</span>
@@ -68,7 +78,7 @@
             <div class="project-content">
               <div class="project-tags">
                 @for (tag of project.tags; track $index) {
-                  <span class="tag">{{ tag | tagName }}</span>
+                  <app-portfolio-tag [id]="tag" variant="tag" />
                 }
               </div>
               <h3>{{ project.title }}</h3>

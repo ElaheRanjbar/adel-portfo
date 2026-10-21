@@ -1,1 +1,11 @@
-<router-outlet />
+@if (store.loaded()) {
+  <router-outlet />
+} @else {
+  <main class="api-error" role="alert">
+    <h1>Portfolio unavailable</h1>
+    <p>{{ store.error() || 'Loading portfolio…' }}</p>
+    <button type="button" (click)="store.load()" [disabled]="store.loading()">
+      {{ store.loading() ? 'Loading…' : 'Try again' }}
+    </button>
+  </main>
+}

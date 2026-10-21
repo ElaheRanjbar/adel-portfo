@@ -1,47 +1,67 @@
-import { DestroyRef, Injectable, inject, signal } from '@angular/core';
+import { Injectable, inject, signal } from '@angular/core';
 import { PortfolioData } from './portfolio.models';
-import { normalizePortfolio } from './portfolio-normalize';
-
+import { ApiClient } from './api-client';
+export interface PortfolioSnapshot {
+  data: PortfolioData;
+  revision: number;
+}
 @Injectable({ providedIn: 'root' })
 export class PortfolioStore {
-  readonly key = 'maryam_portfolio_store';
-  private readonly state = signal<PortfolioData>(this.load());
+  private readonly api = inject(ApiClient);
+  private readonly state = signal<PortfolioData>(null!);
   readonly data = this.state.asReadonly();
-
-  constructor() {
-    const listener = (event: StorageEvent) => {
-      if (event.key === this.key || event.key === null) this.state.set(this.load());
-    };
-    window.addEventListener('storage', listener);
-    inject(DestroyRef).onDestroy(() => window.removeEventListener('storage', listener));
+  readonly revision = signal(0);
+  readonly loaded = signal(false);
+  readonly loading = signal(false);
+  readonly error = signal('');
+  readonly saving = signal(false);
+  private accept(snapshot: PortfolioSnapshot): void {
+    if (!snapshot.data?.hero || !snapshot.data?.header || !Number.isInteger(snapshot.revision))
+      throw new Error('The server returned invalid portfolio content.');
+    this.state.set(snapshot.data);
+    this.revision.set(snapshot.revision);
+    this.loaded.set(true);
   }
-
+  async load(): Promise<void> {
+    this.loading.set(true);
+    this.error.set('');
+    try {
+      this.accept(await this.api.request<PortfolioSnapshot>('/portfolio'));
+    } catch (error) {
+      this.error.set(error instanceof Error ? error.message : 'Could not load portfolio.');
+    } finally {
+      this.loading.set(false);
+    }
+  }
   draft(): PortfolioData {
     return structuredClone(this.data());
   }
-
-  save(data: PortfolioData): void {
-    const normalized = normalizePortfolio(structuredClone(data));
-    localStorage.setItem(this.key, JSON.stringify(normalized));
-    this.state.set(normalized);
-  }
-
-  reset(): void {
-    localStorage.removeItem(this.key);
-    this.state.set(normalizePortfolio());
-  }
-
-  private load(): PortfolioData {
+  async save(data: PortfolioData, expected = this.revision()): Promise<void> {
+    if (this.saving()) throw new Error('A save is already in progress.');
+    this.saving.set(true);
     try {
-      const stored = localStorage.getItem(this.key);
-      if (stored) {
-        const data: unknown = JSON.parse(stored);
-        if (data && typeof data === 'object' && !Array.isArray(data))
-          return normalizePortfolio(data);
-      }
-    } catch {
-      /* Recover from unavailable storage or an invalid backup. */
+      this.accept(
+        await this.api.request<PortfolioSnapshot>('/portfolio', {
+          method: 'PUT',
+          body: data,
+          revision: expected,
+        }),
+      );
+    } finally {
+      this.saving.set(false);
     }
-    return normalizePortfolio();
+  }
+  async reset(expected = this.revision()): Promise<void> {
+    this.saving.set(true);
+    try {
+      this.accept(
+        await this.api.request<PortfolioSnapshot>('/portfolio/reset', {
+          method: 'POST',
+          revision: expected,
+        }),
+      );
+    } finally {
+      this.saving.set(false);
+    }
   }
 }

@@ -25,7 +25,7 @@ describe('Media and existing data compatibility', () => {
     await expect(media.upload(new File(['test'], 'test.exe'), 'document')).rejects.toThrow('PDF');
     const large = new File(['test'], 'photo.png', { type: 'image/png' });
     Object.defineProperty(large, 'size', { value: 9 * 1024 * 1024 });
-    await expect(media.upload(large, 'image')).rejects.toThrow('۸ مگابایت');
+    await expect(media.upload(large, 'image')).rejects.toThrow('8 MB');
     expect(media.pending()).toBe(0);
   });
 

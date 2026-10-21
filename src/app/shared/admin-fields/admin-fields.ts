@@ -1,3 +1,5 @@
+import { createId } from '../../core/create-id';
+import { AdminHelp } from '../admin-help/admin-help';
 import { Component, input, output } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { MediaField } from '../media-field/media-field';
@@ -5,17 +7,20 @@ import { MediaField } from '../media-field/media-field';
 export interface EditorField {
   key: string;
   label: string;
+  help?: string;
+  defaultFor?: (value: Record<string, any>) => string;
   options?: { value: string; label: string }[];
-  type?: 'text' | 'textarea' | 'image' | 'lines' | 'checkbox' | 'select';
+  type?: 'text' | 'textarea' | 'image' | 'svg' | 'icon' | 'lines' | 'checkbox' | 'select';
 }
 
 @Component({
   selector: 'app-admin-fields',
-  imports: [FormsModule, MediaField],
+  imports: [FormsModule, MediaField, AdminHelp],
   templateUrl: './admin-fields.html',
   styleUrl: './admin-fields.css',
 })
 export class AdminFields {
+  readonly fieldPrefix = `field-${createId()}`;
   // The schema controls keys; values belong to the typed parent portfolio model.
   readonly value = input.required<Record<string, any>>();
   readonly fields = input.required<EditorField[]>();

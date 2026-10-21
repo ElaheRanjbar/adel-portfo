@@ -1,5 +1,11 @@
 <fieldset>
-  <legend>تگ‌ها</legend>
+  <legend>
+    Tags
+    <app-admin-help
+      title="Project tags"
+      text="تگ‌های موردنظر این پروژه را انتخاب کنید. برای ساخت یا تغییر نام و لینک تگ به صفحه Tags بروید. هر تگ را می‌توان در چند پروژه استفاده کرد."
+    />
+  </legend>
   <div class="tag-options">
     @for (tag of tags(); track tag.id) {
       <label class="tag-option" [class.selected]="selected().includes(tag.id)"
@@ -10,7 +16,7 @@
         />{{ tag.name }}</label
       >
     } @empty {
-      <p>ابتدا از صفحهٔ تگ‌ها، تگ موردنظر را بسازید.</p>
+      <p>Create tags in the Tags page first.</p>
     }
   </div>
 </fieldset>

@@ -42,3 +42,13 @@ __screenshots__/
 # System files
 .DS_Store
 Thumbs.db
+
+# Server secrets, database, uploaded media and build output
+.env
+.env.*
+!.env.example
+backend/data/
+backend/dist/
+
+backend/node_modules/
+/e2e-results/

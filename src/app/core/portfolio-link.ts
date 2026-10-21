@@ -1,3 +1,4 @@
+import { SmoothScroller } from './smooth-scroller';
 import { Directive, HostBinding, HostListener, inject, input } from '@angular/core';
 import { MediaStore } from './media-store';
 import { Router } from '@angular/router';
@@ -14,6 +15,7 @@ export function portfolioUrl(value: string): string {
 export class PortfolioLink {
   private readonly router = inject(Router);
   private readonly media = inject(MediaStore);
+  private readonly scroller = inject(SmoothScroller);
   readonly portfolioLink = input.required<string>();
   @HostBinding('attr.href') get href(): string {
     return this.media.url(portfolioUrl(this.portfolioLink()));
@@ -38,9 +40,10 @@ export class PortfolioLink {
       href.startsWith('#')
     ) {
       event.preventDefault();
-      void this.router.navigateByUrl(
-        href.startsWith('#') ? this.router.url.split('#')[0] + href : href,
-      );
+      const url = href.startsWith('#') ? this.router.url.split('#')[0] + href : href;
+      if (url === this.router.url && url.includes('#')) {
+        this.scroller.scrollToAnchor(decodeURIComponent(url.slice(url.indexOf('#') + 1)));
+      } else void this.router.navigateByUrl(url);
     }
   }
 }

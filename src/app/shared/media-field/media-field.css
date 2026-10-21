@@ -84,6 +84,6 @@ input[type='file'] {
   cursor: pointer;
 }
 input[type='text']::placeholder {
-  direction: rtl;
-  text-align: right;
+  direction: ltr;
+  text-align: left;
 }

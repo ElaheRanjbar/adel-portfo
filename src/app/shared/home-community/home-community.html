@@ -20,7 +20,11 @@
             class="see-more"
             (click)="toggle(i)"
             [attr.aria-expanded]="expanded().includes(i)"
-            [attr.aria-label]="(expanded().includes(i) ? 'See less of ' : 'See more of ') + testimonial.name + ' testimonial'"
+            [attr.aria-label]="
+              (expanded().includes(i) ? 'See less of ' : 'See more of ') +
+              testimonial.name +
+              ' testimonial'
+            "
           >
             {{ expanded().includes(i) ? 'See less' : store.data().content.testimonialMoreText }}
           </button>
@@ -60,10 +64,43 @@
     ><ng-template>
       @for (photo of store.data().lifePhotos; track $index) {
         <figure class="photo-item">
-          <img [src]="photo.image | mediaUrl" [alt]="photo.caption" loading="lazy" />
+          <button
+            type="button"
+            class="photo-open"
+            (click)="openPhoto(photo)"
+            [attr.aria-label]="'View full image: ' + photo.caption"
+            aria-haspopup="dialog"
+          >
+            <img [src]="photo.image | mediaUrl" [alt]="photo.caption" loading="lazy" />
+          </button>
           <figcaption class="photo-caption">{{ photo.caption }}</figcaption>
         </figure>
       }
     </ng-template></app-auto-slider
   >
 </section>
+
+<dialog
+  #photoDialog
+  class="photo-dialog"
+  aria-label="Full size gallery image"
+  (cancel)="closePhoto()"
+  (close)="closePhoto()"
+  (click)="$event.target === photoDialog && closePhoto()"
+>
+  @if (activePhoto(); as photo) {
+    <button
+      type="button"
+      class="photo-close"
+      (click)="closePhoto()"
+      aria-label="Close full image"
+      autofocus
+    >
+      ×
+    </button>
+    <img [src]="photo.image | mediaUrl" [alt]="photo.caption" decoding="async" />
+    @if (photo.caption) {
+      <p class="photo-dialog-caption">{{ photo.caption }}</p>
+    }
+  }
+</dialog>

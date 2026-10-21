@@ -22,6 +22,7 @@ import {
 export class AutoSlider {
   readonly label = input.required<string>();
   readonly speed = input(26);
+  readonly clickToPause = input(true);
   readonly gap = input(20);
   readonly slides = contentChild.required(TemplateRef);
   readonly viewport = viewChild.required<ElementRef<HTMLElement>>('viewport');
@@ -30,9 +31,7 @@ export class AutoSlider {
   private readonly destroyRef = inject(DestroyRef);
   private unit = 0;
   private position = 0;
-  private hovered = false;
-  private focused = false;
-  private manualUntil = 0;
+  private dragged = false;
   private drag?: { x: number; left: number; pointer: number };
 
   constructor() {
@@ -48,6 +47,7 @@ export class AutoSlider {
     afterNextRender(() => {
       const viewport = this.viewport().nativeElement;
       const group = viewport.querySelector<HTMLElement>('.slider-group')!;
+      const track = viewport.querySelector<HTMLElement>('.slider-track')!;
       const preference = window.matchMedia('(prefers-reduced-motion: reduce)');
       this.paused.set(preference.matches);
       const changePreference = () => this.paused.set(preference.matches);
@@ -73,21 +73,18 @@ export class AutoSlider {
       const animate = (now: number) => {
         const elapsed = Math.min((now - previous) / 1000, 0.05);
         previous = now;
-        if (
-          this.unit &&
-          !this.paused() &&
-          !this.hovered &&
-          !this.focused &&
-          !this.drag &&
-          now > this.manualUntil &&
-          !document.hidden
-        ) {
+        if (this.unit && !this.paused() && !this.drag && !document.hidden) {
           this.position =
             this.unit +
             ((((this.position - this.unit + elapsed * this.speed()) % this.unit) + this.unit) %
               this.unit);
           viewport.scrollLeft = this.position;
-        } else this.position = viewport.scrollLeft;
+          // Native scrolling rounds to device pixels. Preserve the fractional movement visually.
+          track.style.transform = `translate3d(${viewport.scrollLeft - this.position}px, 0, 0)`;
+        } else {
+          this.position = viewport.scrollLeft;
+          track.style.transform = '';
+        }
         frame = requestAnimationFrame(animate);
       };
       frame = requestAnimationFrame(animate);
@@ -99,20 +96,17 @@ export class AutoSlider {
     });
   }
 
-  hover(value: boolean): void {
-    this.hovered = value;
-  }
-  focus(value: boolean): void {
-    this.focused = value;
-  }
-  focusOut(event: FocusEvent): void {
-    this.focused = this.viewport().nativeElement.contains(event.relatedTarget as Node | null);
-  }
-  hold(): void {
-    this.manualUntil = performance.now() + 3000;
+  togglePlayback(event?: MouseEvent): void {
+    if (this.dragged) {
+      this.dragged = false;
+      event?.preventDefault();
+      event?.stopPropagation();
+      return;
+    }
+    if (this.clickToPause()) this.paused.update((paused) => !paused);
   }
   step(direction: number): void {
-    this.hold();
+    this.paused.set(true);
     const viewport = this.viewport().nativeElement;
     viewport.scrollBy({
       left: direction * Math.max(220, viewport.clientWidth * 0.65),
@@ -120,15 +114,22 @@ export class AutoSlider {
     });
   }
   keydown(event: KeyboardEvent): void {
+    if (!this.clickToPause()) return;
     if ((event.target as HTMLElement).closest('a,button,input')) return;
+    if ((event.key === ' ' || event.key === 'Enter') && this.clickToPause()) {
+      event.preventDefault();
+      this.togglePlayback();
+      return;
+    }
     if (event.key === 'ArrowRight' || event.key === 'ArrowLeft') {
       event.preventDefault();
       this.step(event.key === 'ArrowRight' ? 1 : -1);
     }
   }
   pointerDown(event: PointerEvent): void {
-    this.hold();
+    this.dragged = false;
     if (
+      !this.clickToPause() ||
       event.pointerType !== 'mouse' ||
       event.button !== 0 ||
       (event.target as HTMLElement).closest('a,button')
@@ -143,12 +144,13 @@ export class AutoSlider {
   }
   pointerMove(event: PointerEvent): void {
     if (!this.drag) return;
-    this.viewport().nativeElement.scrollLeft = this.drag.left + this.drag.x - event.clientX;
+    if (Math.abs(this.drag.x - event.clientX) > 5) this.dragged = true;
+    if (this.dragged)
+      this.viewport().nativeElement.scrollLeft = this.drag.left + this.drag.x - event.clientX;
   }
   pointerUp(): void {
     if (this.drag && this.viewport().nativeElement.hasPointerCapture(this.drag.pointer))
       this.viewport().nativeElement.releasePointerCapture(this.drag.pointer);
     this.drag = undefined;
-    this.hold();
   }
 }

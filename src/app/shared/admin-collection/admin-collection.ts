@@ -1,9 +1,10 @@
+import { AdminHelp } from '../admin-help/admin-help';
 import { Component, input, output } from '@angular/core';
 import { AdminFields, EditorField } from '../admin-fields/admin-fields';
 
 @Component({
   selector: 'app-admin-collection',
-  imports: [AdminFields],
+  imports: [AdminFields, AdminHelp],
   templateUrl: './admin-collection.html',
   styleUrl: './admin-collection.css',
 })
@@ -11,7 +12,10 @@ export class AdminCollection {
   readonly items = input.required<any[]>();
   readonly fields = input.required<EditorField[]>();
   readonly emptyItem = input.required<Record<string, unknown>>();
-  readonly label = input('مورد');
+  readonly label = input('Item');
+  readonly help = input(
+    'با Add مورد جدید بسازید، با فلش‌ها ترتیب را عوض کنید و با Delete حذف کنید. تغییرات را با دکمهٔ Save page ذخیره کنید.',
+  );
   readonly changed = output<void>();
   add(): void {
     this.items().push(structuredClone(this.emptyItem()));

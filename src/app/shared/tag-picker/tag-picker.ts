@@ -1,7 +1,9 @@
+import { AdminHelp } from '../admin-help/admin-help';
 import { Component, input, output } from '@angular/core';
 
 @Component({
   selector: 'app-tag-picker',
+  imports: [AdminHelp],
   templateUrl: './tag-picker.html',
   styleUrl: './tag-picker.css',
 })

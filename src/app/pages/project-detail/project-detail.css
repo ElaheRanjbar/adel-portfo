@@ -14,7 +14,7 @@
 }
 .detail-hero-title {
   font-family: var(--serif);
-  font-size: 48px;
+  font-size: 40px;
   letter-spacing: -1px;
   font-weight: 700;
   line-height: 1.2;
@@ -29,7 +29,7 @@
 }
 .detail-hero-lead {
   font-size: 16px;
-  line-height: 1.2;
+  line-height: 1.3;
 }
 .detail-hero-image-box {
   height: 350px;
@@ -131,7 +131,7 @@
   white-space: pre-line;
   color: #bcbcc0;
   font-size: 16px;
-  line-height: 28px;
+  line-height: 1.3;
 }
 .narrative-quote {
   margin-top: 40px;
@@ -233,17 +233,13 @@
     border-radius: 999px;
     margin-right: 8px;
   }
-  .detail-hero-title,
   .narrative-block h2,
   .explore-more-title {
     font-size: 36px;
   }
   .narrative-block p {
     font-size: 16px;
-    line-height: 1.65;
-  }
-  .narrative-block h3 {
-    font-size: 20px;
+    line-height: 1.3;
   }
   .narrative-quote {
     font-size: 17px;

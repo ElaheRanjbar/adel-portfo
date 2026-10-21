@@ -1,3 +1,4 @@
+import { AdminHelp } from '../admin-help/admin-help';
 import {
   Component,
   DestroyRef,
@@ -15,6 +16,7 @@ import { RichHtml } from '../../core/rich-html';
 
 @Component({
   selector: 'app-rich-editor',
+  imports: [AdminHelp],
   templateUrl: './rich-editor.html',
   styleUrl: './rich-editor.css',
 })
@@ -124,9 +126,9 @@ export class RichEditor {
               return {
                 upload: async () => {
                   const file = await loader.file;
-                  if (!file || aborted) throw new Error('آپلود لغو شد.');
+                  if (!file || aborted) throw new Error('Upload cancelled.');
                   const id = await media.upload(file, 'image');
-                  if (aborted) throw new Error('آپلود لغو شد.');
+                  if (aborted) throw new Error('Upload cancelled.');
                   return { default: await media.resolve(id) };
                 },
                 abort: () => {
@@ -151,7 +153,7 @@ export class RichEditor {
       });
       this.ready.set(true);
     } catch (error) {
-      this.error.set(error instanceof Error ? error.message : 'بارگذاری ویرایشگر ممکن نیست.');
+      this.error.set(error instanceof Error ? error.message : 'Could not load the editor.');
     }
   }
 
@@ -187,7 +189,7 @@ export class RichEditor {
       }
       this.editor.editing.view.focus();
     } catch (error) {
-      this.error.set(error instanceof Error ? error.message : 'آپلود فایل ناموفق بود.');
+      this.error.set(error instanceof Error ? error.message : 'File upload failed.');
     } finally {
       this.uploading.set(false);
       input.value = '';
@@ -205,7 +207,7 @@ function loadEditorStyles(): Promise<void> {
     link.onerror = () => {
       editorStyles = undefined;
       link.remove();
-      reject(new Error('بارگذاری استایل ویرایشگر ناموفق بود.'));
+      reject(new Error('Could not load editor styles.'));
     };
     document.head.append(link);
   }));

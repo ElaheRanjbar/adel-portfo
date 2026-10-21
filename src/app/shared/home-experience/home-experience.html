@@ -18,11 +18,11 @@
       <h3>{{ store.data().content.cvTitle }}</h3>
       <p>{{ store.data().content.cvDescription }}</p>
     </div>
-    <a
-      [portfolioLink]="store.data().hero.ctaSecondaryLink"
-      [attr.download]="store.data().hero.cvFileName || null"
-      class="btn-outline"
+    <a resumeDownload #resume="resumeDownload" class="btn-outline"
       >{{ store.data().hero.ctaSecondaryText }} <app-icon name="download"
     /></a>
+    @if (resume.error()) {
+      <span class="resume-download-error" role="alert">{{ resume.error() }}</span>
+    }
   </div>
 </section>

@@ -1,3 +1,6 @@
+import { MemoryPortfolioApi } from '../testing/portfolio-api';
+import { ApiClient } from './core/api-client';
+import { AdminAuth } from './core/admin-auth';
 import { TestBed } from '@angular/core/testing';
 import { provideRouter } from '@angular/router';
 import { RouterTestingHarness } from '@angular/router/testing';
@@ -8,9 +11,17 @@ import { portfolioUrl } from './core/portfolio-link';
 import { Admin } from './pages/admin/admin';
 
 describe('Portfolio migration', () => {
-  beforeEach(() => {
+  beforeEach(async () => {
     localStorage.clear();
-    TestBed.configureTestingModule({ providers: [provideRouter(routes)] });
+    TestBed.configureTestingModule({
+      providers: [
+        provideRouter(routes),
+        MemoryPortfolioApi,
+        { provide: ApiClient, useExisting: MemoryPortfolioApi },
+      ],
+    });
+    await TestBed.inject(PortfolioStore).load();
+    TestBed.inject(AdminAuth).user.set({ username: 'admin' });
   });
 
   afterEach(() => localStorage.clear());
@@ -25,7 +36,7 @@ describe('Portfolio migration', () => {
     const store = TestBed.inject(PortfolioStore);
     const draft = store.draft();
     draft.detailedCaseStudies['case-2'].title = 'Second case detail';
-    store.save(draft);
+    await store.save(draft);
     const harness = await RouterTestingHarness.create('/projects');
     expect(harness.routeNativeElement?.querySelectorAll('.listing-card').length).toBe(4);
     await harness.navigateByUrl('/project-detail?id=case-1');
@@ -50,7 +61,7 @@ describe('Portfolio migration', () => {
     const harness = await RouterTestingHarness.create();
     const admin = await harness.navigateByUrl('/admin', Admin);
     const input = harness.routeNativeElement?.querySelector(
-      'input[aria-label="نام"]',
+      'input[aria-label="Name"]',
     ) as HTMLInputElement;
     input.value = 'Updated Maryam';
     input.dispatchEvent(new Event('input'));
@@ -59,38 +70,39 @@ describe('Portfolio migration', () => {
     admin.addProject();
     admin.removeProject(1);
     expect(admin.data.caseStudiesList[0].title).toBe('Edited project');
-    admin.save();
-    expect(JSON.parse(localStorage.getItem('maryam_portfolio_store')!).hero.name).toBe(
-      'Updated Maryam',
-    );
+    await admin.savePage('hero');
+    await admin.savePage('projects');
+    expect(TestBed.inject(MemoryPortfolioApi).data.hero.name).toBe('Updated Maryam');
     await harness.navigateByUrl('/');
     expect(harness.routeNativeElement?.querySelector('h1')?.textContent).toContain(
       'Updated Maryam',
     );
   });
 
-  it('isolates drafts, restores defaults, and recovers from malformed storage', () => {
+  it('isolates drafts, restores server defaults, and ignores obsolete browser storage', async () => {
     localStorage.setItem('maryam_portfolio_store', '{bad json');
     const store = TestBed.inject(PortfolioStore);
     expect(store.data().hero.name).toBe(DEFAULT_PORTFOLIO_DATA.hero.name);
     const draft = store.draft();
     draft.hero.name = 'Edited';
     expect(store.data().hero.name).toBe('Maryam');
-    store.save(draft);
+    await store.save(draft);
     expect(store.data().hero.name).toBe('Edited');
-    store.reset();
+    await store.reset();
     expect(store.data().hero.name).toBe('Maryam');
-    expect(localStorage.getItem(store.key)).toBeNull();
+    expect(TestBed.inject(MemoryPortfolioApi).data.hero.name).toBe(
+      DEFAULT_PORTFOLIO_DATA.hero.name,
+    );
   });
 
-  it('renders custom HTML without executing embedded scripts', async () => {
+  it('does not render removed custom HTML from legacy content', async () => {
     const store = TestBed.inject(PortfolioStore);
     const draft = store.draft();
     draft.customHtmlEmbed = '<p>Custom content</p><script>alert(1)</script>';
-    store.save(draft);
+    await store.save(draft);
     const harness = await RouterTestingHarness.create('/');
     const mount = harness.routeNativeElement?.querySelector('#custom-html-mount');
-    expect(mount?.textContent).toContain('Custom content');
-    expect(mount?.querySelector('script')).toBeNull();
+    expect(mount).toBeNull();
+    expect(harness.routeNativeElement?.textContent).not.toContain('Custom content');
   });
 });

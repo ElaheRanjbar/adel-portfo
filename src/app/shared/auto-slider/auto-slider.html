@@ -2,13 +2,15 @@
   <div
     #viewport
     class="slider-window"
-    tabindex="0"
-    [attr.aria-label]="label() + '. Use the arrow keys to browse.'"
-    (pointerenter)="hover(true)"
-    (pointerleave)="hover(false)"
-    (focusin)="focus(true)"
-    (focusout)="focusOut($event)"
-    (wheel)="hold()"
+    [class.continuous]="!clickToPause()"
+    [attr.tabindex]="clickToPause() ? 0 : null"
+    [attr.aria-label]="
+      label() +
+      (clickToPause()
+        ? '. Click or press Space to pause or resume. Use the arrow keys to browse.'
+        : '')
+    "
+    (click)="togglePlayback($event)"
     (keydown)="keydown($event)"
     (pointerdown)="pointerDown($event)"
     (pointermove)="pointerMove($event)"
@@ -28,16 +30,18 @@
       }
     </div>
   </div>
-  <div class="slider-controls" aria-label="Slider controls">
-    <button type="button" (click)="step(-1)" aria-label="Previous slides">←</button>
-    <button
-      type="button"
-      (click)="paused.set(!paused())"
-      [attr.aria-label]="paused() ? 'Resume automatic scrolling' : 'Pause automatic scrolling'"
-      [attr.aria-pressed]="paused()"
-    >
-      {{ paused() ? '▶' : 'Ⅱ' }}
-    </button>
-    <button type="button" (click)="step(1)" aria-label="Next slides">→</button>
-  </div>
+  @if (clickToPause()) {
+    <div class="slider-controls" aria-label="Slider controls">
+      <button type="button" (click)="step(-1)" aria-label="Previous slides">←</button>
+      <button
+        type="button"
+        (click)="paused.set(!paused())"
+        [attr.aria-label]="paused() ? 'Resume automatic scrolling' : 'Pause automatic scrolling'"
+        [attr.aria-pressed]="paused()"
+      >
+        {{ paused() ? '▶' : 'Ⅱ' }}
+      </button>
+      <button type="button" (click)="step(1)" aria-label="Next slides">→</button>
+    </div>
+  }
 </div>

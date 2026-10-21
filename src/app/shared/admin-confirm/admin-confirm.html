@@ -1,7 +1,7 @@
 <dialog
   #dialog
-  lang="fa"
-  dir="rtl"
+  lang="en"
+  dir="ltr"
   aria-labelledby="confirmation-title"
   aria-describedby="confirmation-description"
   (cancel)="$event.preventDefault(); cancelled.emit()"
@@ -10,8 +10,8 @@
     <h2 id="confirmation-title">{{ request.title }}</h2>
     <p id="confirmation-description">{{ request.message }}</p>
     <div class="dialog-actions">
-      <button type="button" autofocus (click)="cancelled.emit()">انصراف</button
-      ><button type="button" class="confirm-action" (click)="confirmed.emit()">تأیید</button>
+      <button type="button" autofocus (click)="cancelled.emit()">Cancel</button
+      ><button type="button" class="confirm-action" (click)="confirmed.emit()">Confirm</button>
     </div>
   }
 </dialog>

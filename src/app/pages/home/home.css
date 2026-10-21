@@ -38,6 +38,7 @@
   margin-bottom: 28px;
 }
 .hero-actions {
+  --hero-button-bg: #fff;
   display: flex;
   gap: 20px;
   flex-wrap: wrap;
@@ -51,9 +52,18 @@
   font-size: 16px;
   padding: 16px 28px;
 }
+.hero-actions .btn-outline {
+  --hero-button-bg: #1b1b1e;
+}
+.hero-actions :is(.btn-primary, .btn-outline):is(:hover, :focus-visible) {
+  border-color: transparent;
+  background:
+    linear-gradient(var(--hero-button-bg), var(--hero-button-bg)) padding-box,
+    linear-gradient(110deg, #397bff, #ac27cc) border-box;
+}
 .hero-image-card {
-  width: 444px;
-  height: 410px;
+  width: 100%;
+  aspect-ratio: 444 / 410;
 }
 .hero-image-card img {
   width: 100%;
@@ -151,7 +161,7 @@
     font-size: 48px;
   }
   .hero p {
-    font-size: 17px;
+    font-size: 16px;
   }
   .hero-image-card {
     max-width: 444px;
@@ -212,32 +222,54 @@
   box-shadow: 10px 10px 0 -1px #242426;
 }
 .original-portrait img {
-  clip-path: polygon(0 0, 78% 0, 78% 30%, 100% 30%, 100% 100%, 0 100%, 0 64%, 23% 64%, 23% 36%, 0 36%);
+  clip-path: polygon(
+    0 0,
+    78% 0,
+    78% 30%,
+    100% 30%,
+    100% 100%,
+    0 100%,
+    0 64%,
+    23% 64%,
+    23% 36%,
+    0 36%
+  );
 }
 .hero-decoration {
   position: absolute;
   width: 22%;
   height: auto;
   pointer-events: none;
+  z-index: 1;
   will-change: transform;
 }
 .hero-decoration-figma {
   left: 1.5%;
   top: 38%;
-  animation: float-figma 5s ease-in-out infinite;
+  animation: float-figma 3s ease-in-out infinite;
 }
 .hero-decoration-design {
   right: 1%;
   top: 2%;
-  animation: float-design 5.8s ease-in-out infinite;
+  animation: float-design 3.5s ease-in-out infinite;
 }
 @keyframes float-figma {
-  0%, 100% { transform: translate(0, 0) rotate(-12deg); }
-  50% { transform: translate(4px, -8px) rotate(-7deg); }
+  0%,
+  100% {
+    transform: translate(0, 0) rotate(-12deg);
+  }
+  50% {
+    transform: translate(4px, -8px) rotate(-7deg);
+  }
 }
 @keyframes float-design {
-  0%, 100% { transform: translate(0, 0) rotate(12deg); }
-  50% { transform: translate(-4px, 7px) rotate(7deg); }
+  0%,
+  100% {
+    transform: translate(0, 0) rotate(12deg);
+  }
+  50% {
+    transform: translate(-4px, 7px) rotate(7deg);
+  }
 }
 @media (max-width: 760px) {
   .hero-image-wrapper {

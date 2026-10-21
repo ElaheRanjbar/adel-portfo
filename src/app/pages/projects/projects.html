@@ -4,8 +4,90 @@
     <h1>{{ store.data().content.listingTitle }}</h1>
     <p>{{ store.data().content.listingDescription }}</p>
   </div>
+  <section class="project-filters" aria-label="Case study filters">
+    <div class="filter-toolbar">
+      <div class="filter-menu" #filterMenu>
+        <button
+          #filterButton
+          type="button"
+          class="filter-toggle"
+          (click)="filterOpen.set(!filterOpen())"
+          [attr.aria-expanded]="filterOpen()"
+          aria-controls="case-tag-filter"
+        >
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M4 3h16a1 1 0 0 1 1 1v2l-7 7v7l-4 2V13L3 6V4a1 1 0 0 1 1-1Z" />
+          </svg>
+          Filter
+        </button>
+        @if (filterOpen()) {
+          <div id="case-tag-filter" class="filter-dropdown" role="group" aria-label="Filter by tag">
+            @for (tag of filterTags(); track tag.id) {
+              <label class="filter-option">
+                <input
+                  type="checkbox"
+                  [checked]="isSelected(tag.id)"
+                  (change)="toggleTag(tag.id)"
+                />
+                <span class="checkbox-mark" aria-hidden="true"></span>
+                <span>{{ tag.name }}</span>
+              </label>
+            } @empty {
+              <p class="no-filter-tags">No tags assigned</p>
+            }
+          </div>
+        }
+      </div>
+      <button
+        type="button"
+        class="sort-toggle"
+        (click)="toggleSort()"
+        [attr.aria-label]="
+          oldestFirst() ? 'Oldest first. Sort newest first' : 'Newest first. Sort oldest first'
+        "
+      >
+        <svg viewBox="0 0 24 24" aria-hidden="true" [class.reversed]="oldestFirst()">
+          <path d="M12 20V4m-6 6 6-6 6 6" />
+        </svg>
+        {{ oldestFirst() ? 'Oldest first' : 'Newest first' }}
+      </button>
+    </div>
+    <div class="filter-summary">
+      <div class="selected-filters" aria-label="Selected tag filters">
+        @if (selectedTags().length) {
+          <span class="filtered-label">Filtered by:</span>
+          @for (tag of selectedTags(); track tag.id) {
+            <button
+              type="button"
+              class="filter-chip"
+              (click)="removeTag(tag.id)"
+              [attr.aria-label]="'Remove filter: ' + tag.name"
+            >
+              {{ tag.name }}
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <circle cx="12" cy="12" r="10" />
+                <path d="m9 9 6 6m0-6-6 6" />
+              </svg>
+            </button>
+          }
+          <button
+            type="button"
+            class="clear-filters"
+            (click)="clearTags()"
+            aria-label="Clear filters"
+          >
+            Clear
+          </button>
+        }
+      </div>
+      <p class="filter-results" role="status" aria-live="polite">
+        Showing {{ filteredProjects().length }} case
+        {{ filteredProjects().length === 1 ? 'study' : 'studies' }}
+      </p>
+    </div>
+  </section>
   <div class="case-studies-container">
-    @for (project of store.data().caseStudiesList; track $index) {
+    @for (project of filteredProjects(); track $index) {
       <article class="listing-card">
         <div class="listing-preview">
           <img [src]="project.image | mediaUrl" [alt]="project.subtitle" loading="lazy" />
@@ -13,7 +95,7 @@
         <div>
           <div class="tags-row">
             @for (tag of project.tags; track $index) {
-              <span class="pill-tag">{{ tag | tagName }}</span>
+              <app-portfolio-tag [id]="tag" variant="pill-tag" />
             }
           </div>
           <h2 class="listing-title">{{ project.title }}</h2>
@@ -28,7 +110,13 @@
         </div>
       </article>
     } @empty {
-      <p>No case studies yet.</p>
+      <div class="empty-projects">
+        <h2>No case studies found.</h2>
+        @if (selectedTags().length) {
+          <p>Try another tag or clear your filters.</p>
+          <button type="button" class="clear-filters" (click)="clearTags()">Clear filters</button>
+        }
+      </div>
     }
   </div>
 </main>

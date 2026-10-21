@@ -10,27 +10,18 @@ import {
   DestroyRef,
   ElementRef,
 } from '@angular/core';
-import { ActivatedRoute, RouterLink } from '@angular/router';
+import { ActivatedRoute } from '@angular/router';
 import { toSignal } from '@angular/core/rxjs-interop';
 import { PortfolioStore } from '../../core/portfolio-store';
 import { MediaUrl } from '../../core/media-url';
-import { TagName } from '../../core/tag-name';
+import { PortfolioTag } from '../../shared/portfolio-tag/portfolio-tag';
 import { PortfolioLink } from '../../core/portfolio-link';
 import { SiteHeader } from '../../shared/site-header/site-header';
 import { SiteFooter } from '../../shared/site-footer/site-footer';
 
 @Component({
   selector: 'app-project-detail',
-  imports: [
-    RichContent,
-    Icon,
-    MediaUrl,
-    TagName,
-    SiteHeader,
-    SiteFooter,
-    PortfolioLink,
-    RouterLink,
-  ],
+  imports: [RichContent, Icon, MediaUrl, PortfolioTag, SiteHeader, SiteFooter, PortfolioLink],
   templateUrl: './project-detail.html',
   styleUrl: './project-detail.css',
 })
@@ -43,13 +34,12 @@ export class ProjectDetail {
   private readonly params = toSignal(this.route.queryParamMap, {
     initialValue: this.route.snapshot.queryParamMap,
   });
-  readonly fragment = toSignal(this.route.fragment);
   readonly project = computed(() => {
     const projects = this.store.data().detailedCaseStudies;
     return projects[this.params().get('id') || 'case-1'];
   });
   constructor() {
-    effect(() => this.activeSection.set(this.fragment() || this.project()?.sections[0]?.id || ''));
+    effect(() => this.activeSection.set(this.project()?.sections[0]?.id || ''));
     afterNextRender(() => {
       const update = () => {
         const sections = Array.from(
@@ -62,8 +52,19 @@ export class ProjectDetail {
           sections[0];
         if (current) this.activeSection.set(current.id);
       };
-      window.addEventListener('scroll', update, { passive: true });
-      this.destroyRef.onDestroy(() => window.removeEventListener('scroll', update));
+      let frame = 0;
+      const schedule = () => {
+        if (frame) return;
+        frame = requestAnimationFrame(() => {
+          frame = 0;
+          update();
+        });
+      };
+      window.addEventListener('scroll', schedule, { passive: true });
+      this.destroyRef.onDestroy(() => {
+        window.removeEventListener('scroll', schedule);
+        cancelAnimationFrame(frame);
+      });
     });
   }
 }

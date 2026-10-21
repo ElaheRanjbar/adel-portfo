@@ -1,3 +1,4 @@
+import { DEFAULT_FLOATING_BADGES } from '../../../shared/floating-badges';
 import { createId } from './create-id';
 import { DEFAULT_PORTFOLIO_DATA } from './portfolio.data';
 import { LEGACY_PORTFOLIO_DATA } from './portfolio.legacy';
@@ -6,7 +7,7 @@ import { PortfolioData } from './portfolio.models';
 /** Upgrades existing browser data without discarding the original content. */
 export function normalizePortfolio(value: Partial<PortfolioData> = {}): PortfolioData {
   value = structuredClone(value);
-  if (value.schemaVersion !== 3) {
+  if (value.schemaVersion !== 3 && value.schemaVersion !== 4) {
     // Only replace untouched demo sections. User-edited content and uploaded media survive.
     const names = new Map((value.tags || []).map((tag) => [tag.id, tag.name]));
     const canonical = (item: unknown): string =>
@@ -35,7 +36,9 @@ export function normalizePortfolio(value: Partial<PortfolioData> = {}): Portfoli
   const data = { ...defaults, ...value };
   data.header = { ...defaults.header, ...value.header };
   data.hero = { ...defaults.hero, ...value.hero };
-  data.schemaVersion = 3;
+  if (value.schemaVersion !== 4 && !data.hero.badges.some((badge) => badge.image))
+    data.hero.badges = [...structuredClone(DEFAULT_FLOATING_BADGES), ...data.hero.badges];
+  data.schemaVersion = 4;
   data.content = { ...defaults.content, ...value.content };
   data.tags = structuredClone(value.tags ?? []);
   for (const tags of tagCollections(data)) {

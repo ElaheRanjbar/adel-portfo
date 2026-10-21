@@ -1,33 +1,28 @@
 <div class="collection-header">
-  <h4>{{ label() }}</h4>
-  <button type="button" (click)="add()">+ افزودن</button>
+  <h4>{{ label() }} <app-admin-help [title]="label()" [text]="help()" /></h4>
+  <button type="button" (click)="add()">+ Add</button>
 </div>
 @for (item of items(); track $index; let i = $index) {
   <div class="collection-item">
     <div class="item-actions">
-      <span>{{ label() }} {{ (i + 1).toLocaleString('fa-IR') }}</span>
+      <span>{{ label() }} {{ (i + 1).toLocaleString('en-US') }}</span>
       <div>
-        <button
-          type="button"
-          (click)="move(i, -1)"
-          [disabled]="i === 0"
-          aria-label="انتقال به بالا"
-        >
+        <button type="button" (click)="move(i, -1)" [disabled]="i === 0" aria-label="Move up">
           ↑
         </button>
         <button
           type="button"
           (click)="move(i, 1)"
           [disabled]="i === items().length - 1"
-          aria-label="انتقال به پایین"
+          aria-label="Move down"
         >
           ↓
         </button>
-        <button type="button" (click)="remove(i)" class="remove">حذف</button>
+        <button type="button" (click)="remove(i)" class="remove">Delete</button>
       </div>
     </div>
     <app-admin-fields [value]="item" [fields]="fields()" (changed)="changed.emit()" />
   </div>
 } @empty {
-  <p class="empty">هنوز موردی ثبت نشده است. از دکمهٔ افزودن استفاده کنید.</p>
+  <p class="empty">No items yet. Click Add to create one.</p>
 }

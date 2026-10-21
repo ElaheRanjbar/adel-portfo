@@ -20,12 +20,12 @@ export const routes: Routes = [
   {
     path: 'admin',
     loadComponent: () => import('./pages/admin/admin').then((m) => m.Admin),
-    title: 'مدیریت پورتفولیو',
+    title: 'Portfolio admin',
   },
   {
     path: 'admin/:section',
     loadComponent: () => import('./pages/admin/admin').then((m) => m.Admin),
-    title: 'مدیریت پورتفولیو',
+    title: 'Portfolio admin',
   },
   { path: 'index.html', redirectTo: '', pathMatch: 'full' },
   { path: 'projects.html', redirectTo: 'projects', pathMatch: 'full' },

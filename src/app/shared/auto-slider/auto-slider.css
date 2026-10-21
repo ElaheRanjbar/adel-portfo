@@ -65,3 +65,12 @@ button {
     transition: none;
   }
 }
+
+.slider-window.continuous {
+  overflow-x: hidden;
+  cursor: default;
+}
+
+.slider-track {
+  will-change: transform;
+}

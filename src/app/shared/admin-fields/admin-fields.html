@@ -1,13 +1,28 @@
 <div class="fields-grid">
   @for (field of fields(); track field.key) {
     <div
-      [class.wide]="field.type === 'textarea' || field.type === 'image' || field.type === 'lines'"
+      [class.wide]="
+        field.type === 'textarea' ||
+        field.type === 'image' ||
+        field.type === 'svg' ||
+        field.type === 'icon' ||
+        field.type === 'lines'
+      "
     >
       @switch (field.type) {
         @case ('select') {
-          <label
-            >{{ field.label
-            }}<select [ngModel]="value()[field.key]" (ngModelChange)="update(field.key, $event)">
+          <label [attr.for]="fieldPrefix + '-' + field.key"
+            ><span
+              >{{ field.label }}
+              @if (field.help) {
+                <app-admin-help [title]="field.label" [text]="field.help" />
+              }</span
+            ><select
+              [id]="fieldPrefix + '-' + field.key"
+              [attr.aria-label]="field.label"
+              [ngModel]="value()[field.key]"
+              (ngModelChange)="update(field.key, $event)"
+            >
               @for (option of field.options; track option.value) {
                 <option [value]="option.value">{{ option.label }}</option>
               }
@@ -15,25 +30,55 @@
           >
         }
         @case ('checkbox') {
-          <label class="checkbox-field"
+          <label [attr.for]="fieldPrefix + '-' + field.key" class="checkbox-field"
             ><input
+              [id]="fieldPrefix + '-' + field.key"
               type="checkbox"
+              [attr.aria-label]="field.label"
               [ngModel]="!!value()[field.key]"
               (ngModelChange)="update(field.key, $event)"
-            />{{ field.label }}</label
-          >
+            />{{ field.label }}
+            @if (field.help) {
+              <app-admin-help [title]="field.label" [text]="field.help" />
+            }
+          </label>
+        }
+        @case ('svg') {
+          <app-media-field
+            kind="svg"
+            [label]="field.label"
+            [help]="field.help || ''"
+            [defaultValue]="field.defaultFor?.(value()) || ''"
+            [value]="value()[field.key] || ''"
+            (valueChange)="update(field.key, $event)"
+          />
+        }
+        @case ('icon') {
+          <app-media-field
+            kind="icon"
+            [label]="field.label"
+            [help]="field.help || ''"
+            [value]="value()[field.key] || ''"
+            (valueChange)="update(field.key, $event)"
+          />
         }
         @case ('image') {
           <app-media-field
             [label]="field.label"
+            [help]="field.help || ''"
             [value]="value()[field.key] || ''"
             (valueChange)="update(field.key, $event)"
           />
         }
         @case ('textarea') {
-          <label
-            >{{ field.label
-            }}<textarea
+          <label [attr.for]="fieldPrefix + '-' + field.key"
+            ><span
+              >{{ field.label }}
+              @if (field.help) {
+                <app-admin-help [title]="field.label" [text]="field.help" />
+              }</span
+            ><textarea
+              [id]="fieldPrefix + '-' + field.key"
               dir="auto"
               [attr.aria-label]="field.label"
               rows="3"
@@ -43,8 +88,14 @@
           </label>
         }
         @case ('lines') {
-          <label
-            >{{ field.label }}؛ هر مورد در یک خط<textarea
+          <label [attr.for]="fieldPrefix + '-' + field.key"
+            ><span
+              >{{ field.label }} (one per line)
+              @if (field.help) {
+                <app-admin-help [title]="field.label" [text]="field.help" />
+              }</span
+            ><textarea
+              [id]="fieldPrefix + '-' + field.key"
               dir="auto"
               [attr.aria-label]="field.label"
               rows="5"
@@ -54,9 +105,14 @@
           </label>
         }
         @default {
-          <label
-            >{{ field.label
-            }}<input
+          <label [attr.for]="fieldPrefix + '-' + field.key"
+            ><span
+              >{{ field.label }}
+              @if (field.help) {
+                <app-admin-help [title]="field.label" [text]="field.help" />
+              }</span
+            ><input
+              [id]="fieldPrefix + '-' + field.key"
               [attr.aria-label]="field.label"
               type="text"
               dir="auto"

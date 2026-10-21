@@ -8,7 +8,12 @@
     <div class="social-links">
       @for (social of store.data().footer.socials; track $index) {
         <a [href]="social.link" target="_blank" rel="noopener noreferrer" class="social-btn"
-          ><span class="social-icon"><app-icon [name]="socialIcon(social.label)" /></span
+          ><span class="social-icon">
+            @if (social.image) {
+              <img [src]="social.image | mediaUrl" alt="" loading="lazy" />
+            } @else {
+              <app-icon [name]="social.icon || socialIcon(social.label)" />
+            }</span
           >{{ social.label }}</a
         >
       }
@@ -17,7 +22,7 @@
   <div class="footer-bottom-wrap" [class.tall-bottom]="tallBottom()">
     <div class="container footer-bottom-bar">
       <p class="copyright">{{ store.data().footer.copyright }}</p>
-      <a portfolioLink="#top" class="back-to-top"
+      <a href="#top" (click)="scrollToTop($event)" class="back-to-top"
         ><app-icon name="top" />{{ store.data().content.topText }}</a
       >
     </div>

@@ -1,522 +1,814 @@
-<div class="admin-body" lang="fa" dir="rtl">
-  <header class="admin-topbar">
-    <div class="admin-topbar-inner">
-      <div class="admin-brand">
-        @if (data.header.logoImage) {
-          <img
-            class="admin-logo-image"
-            [src]="data.header.logoImage | mediaUrl"
-            [alt]="data.header.logoAlt"
+@if (!auth.user()) {
+  <main class="admin-login" lang="en" dir="ltr">
+    <h1>Portfolio admin</h1>
+    <p>Sign in to manage your content and files.</p>
+    <form (ngSubmit)="signIn()">
+      <label class="form-group"
+        >Username<input
+          type="text"
+          name="username"
+          autocomplete="username"
+          required
+          [(ngModel)]="loginUsername"
+      /></label>
+      <label class="form-group"
+        >Password<input
+          type="password"
+          name="password"
+          autocomplete="current-password"
+          required
+          [(ngModel)]="loginPassword"
+      /></label>
+      @if (auth.error()) {
+        <p role="alert">{{ auth.error() }}</p>
+      }
+      <button type="submit" class="admin-btn btn-primary" [disabled]="auth.busy()">
+        {{ auth.busy() ? 'Signing in…' : 'Sign in' }}
+      </button>
+    </form>
+    <a portfolioLink="/">Back to portfolio</a>
+  </main>
+} @else {
+  <div class="admin-body" lang="en" dir="ltr">
+    <header class="admin-topbar">
+      <div class="admin-topbar-inner">
+        <div class="admin-brand">
+          @if (data.header.logoImage) {
+            <img
+              class="admin-logo-image"
+              [src]="data.header.logoImage | mediaUrl"
+              [alt]="data.header.logoAlt"
+            />
+          } @else {
+            <span class="admin-logo-badge">{{ data.header.logo }}</span>
+          }
+          <div>
+            <h2>Portfolio admin</h2>
+            <span class="admin-caption">Content, projects and files</span>
+          </div>
+        </div>
+        <div class="admin-top-actions">
+          <button
+            type="button"
+            class="admin-btn btn-secondary"
+            (click)="refreshContent()"
+            [disabled]="store.saving() || importing()"
+          >
+            Reload from server
+          </button>
+          <button
+            type="button"
+            class="admin-btn btn-secondary"
+            (click)="auth.logout()"
+            [disabled]="auth.busy()"
+          >
+            Sign out
+          </button>
+          <a portfolioLink="/" target="_blank" rel="noopener" class="admin-btn btn-secondary"
+            >↗ View site</a
+          >
+          <button type="button" (click)="discard()" class="admin-btn btn-secondary">
+            Discard changes
+          </button>
+          <app-admin-help
+            title="Discard changes"
+            text="تغییرات ذخیره‌نشده را پس از تأیید کنار می‌گذارد و آخرین نسخه ذخیره‌شده را برمی‌گرداند."
           />
-        } @else {
-          <span class="admin-logo-badge">{{ data.header.logo }}</span>
-        }
-        <div>
-          <h2>مدیریت پورتفولیو</h2>
-          <span class="admin-caption">محتوا، پروژه‌ها و فایل‌ها</span>
+          @if (editablePage()) {
+            <app-admin-save label="page" (save)="savePage()" />
+          }
         </div>
       </div>
-      <div class="admin-top-actions">
-        <a portfolioLink="/" target="_blank" rel="noopener" class="admin-btn btn-secondary"
-          >↗ مشاهدهٔ سایت</a
-        >
-        <button type="button" (click)="discard()" class="admin-btn btn-secondary">
-          لغو تغییرات
-        </button>
-        <button
-          type="button"
-          (click)="save()"
-          [disabled]="media.pending() > 0"
-          class="admin-btn btn-primary"
-        >
-          ذخیرهٔ همهٔ تغییرات
-        </button>
-      </div>
-    </div>
-  </header>
-  <div class="admin-shell">
-    <aside class="admin-sidebar">
-      <nav class="admin-menu" aria-label="بخش‌های مدیریت">
-        @for (item of tabs; track item.id) {
-          <a
-            class="menu-item"
-            [routerLink]="['/admin', item.id]"
-            [class.active]="tab() === item.id"
-            [attr.aria-current]="tab() === item.id ? 'page' : null"
-            >{{ item.label }}</a
-          >
-        }
-      </nav>
-      <p class="storage-note">
-        تغییرات در همین مرورگر ذخیره می‌شوند. برای اعمال آن‌ها در سایت، «ذخیرهٔ همهٔ تغییرات» را
-        بزنید.
-      </p>
-    </aside>
-    <main class="admin-content">
-      @if (media.error()) {
-        <p role="alert" class="muted">{{ media.error() }}</p>
-      }
-      <div id="admin-toast" [class.toast-hidden]="!toast()" role="status" aria-live="polite">
-        {{ toast() }}
-      </div>
-      @switch (tab()) {
-        @case ('hero') {
-          <div class="page-heading">
-            <span class="eyebrow">صفحهٔ اصلی</span>
-            <h1>معرفی و رزومه</h1>
-            <p>عکس، عنوان، توضیحات، دکمه‌ها و رزومهٔ خود را ویرایش کنید.</p>
-          </div>
-          <app-admin-fields [value]="data.hero" [fields]="fields.hero" />
-          <section class="editor-panel">
-            <h3>فایل رزومه و دانلود</h3>
-            <app-media-field
-              label="رزومه"
-              kind="document"
-              [value]="data.hero.ctaSecondaryLink"
-              (valueChange)="data.hero.ctaSecondaryLink = $event"
-              (fileNameChange)="data.hero.cvFileName = $event"
-            />
-            <label class="form-group"
-              >نام فایل هنگام دانلود<input
-                type="text"
-                dir="auto"
-                [(ngModel)]="data.hero.cvFileName"
-                placeholder="رزومه.pdf"
-            /></label>
-          </section>
-          <app-admin-collection
-            label="نشان شناور"
-            [items]="data.hero.badges"
-            [fields]="fields.badge"
-            [emptyItem]="{ label: 'نشان جدید', icon: '✨', positionClass: 'card-top-right' }"
-          />
-        }
-        @case ('header') {
-          <div class="page-heading">
-            <span class="eyebrow">ناوبری سایت</span>
-            <h1>سربرگ و لوگو</h1>
-            <p>لوگوی سایت و پیوندهای منو را تغییر دهید.</p>
-          </div>
-          <app-admin-fields [value]="data.header" [fields]="fields.header" />
-          <h3>دکمهٔ تماس</h3>
-          <app-admin-fields [value]="data.header.ctaButton" [fields]="fields.cta" />
-          <app-admin-collection
-            label="پیوند منو"
-            [items]="data.header.navLinks"
-            [fields]="fields.nav"
-            [emptyItem]="{ label: 'پیوند جدید', href: '/' }"
-          />
-        }
-        @case ('projects') {
-          <div class="page-heading">
-            <span class="eyebrow">مطالعه‌های موردی</span>
-            <h1>پروژه‌ها و مطالعه‌های موردی</h1>
-            <p>مطالعهٔ موردی بسازید، همهٔ بخش‌های آن را ویرایش کنید یا پروژه را حذف کنید.</p>
-          </div>
-          <div class="panel-header">
-            <label class="form-group project-select"
-              >انتخاب مطالعهٔ موردی<select
-                [ngModel]="currentProject?.id || ''"
-                (ngModelChange)="selectedId.set($event)"
+    </header>
+    <div class="admin-shell">
+      <aside class="admin-sidebar">
+        <nav class="admin-menu" aria-label="Admin sections">
+          @for (item of tabs; track item.id) {
+            <div class="menu-row">
+              <a
+                class="menu-item"
+                [routerLink]="['/admin', item.id]"
+                [class.active]="tab() === item.id"
+                [attr.aria-current]="tab() === item.id ? 'page' : null"
+                >{{ item.label }}</a
               >
-                @for (project of data.caseStudiesList; track project.id) {
-                  <option [value]="project.id">{{ project.title }} — {{ project.subtitle }}</option>
-                }
-              </select></label
-            >
-            <button type="button" (click)="addProject()" class="admin-btn btn-primary">
-              + ایجاد مطالعهٔ موردی
-            </button>
-          </div>
-          @if (currentProject; as project) {
-            <section class="editor-panel">
-              <div class="panel-header">
-                <h3>کارت فهرست پروژه‌ها</h3>
-                <div class="inline-actions">
-                  <a
-                    [portfolioLink]="'/project-detail?id=' + project.id"
-                    target="_blank"
-                    class="admin-btn btn-secondary"
-                    >↗ پیش‌نمایش</a
-                  ><button type="button" class="admin-btn btn-danger" (click)="deleteCurrent()">
-                    حذف مطالعهٔ موردی
-                  </button>
-                </div>
-              </div>
-              <app-admin-fields
-                [value]="project"
-                [fields]="fields.project"
-                (changed)="syncHome(project)"
-              />
-              <app-tag-picker
-                [tags]="data.tags"
-                [selected]="project.tags"
-                (selectedChange)="project.tags = $event; syncHome(project)"
-              />
-              <label class="checkbox-row"
-                ><input
-                  type="checkbox"
-                  [checked]="isFeatured(project.id)"
-                  (change)="toggleFeatured(project)"
-                />
-                نمایش این پروژه در صفحهٔ اصلی</label
-              >
-            </section>
-            @if (currentDetail; as detail) {
-              <section class="editor-panel">
-                <h3>معرفی مطالعهٔ موردی</h3>
-                <app-admin-fields [value]="detail" [fields]="fields.detail" />
-                <app-tag-picker
-                  [tags]="data.tags"
-                  [selected]="detail.tags"
-                  (selectedChange)="detail.tags = $event"
-                />
-                <app-admin-collection
-                  label="اطلاعات پروژه"
-                  [items]="detail.meta"
-                  [fields]="fields.meta"
-                  [emptyItem]="{ label: '', value: '' }"
-                />
-              </section>
-              <section class="editor-panel">
-                <div class="panel-header">
-                  <h3>بخش‌های توضیحات پروژه</h3>
-                  <button
-                    type="button"
-                    class="admin-btn btn-secondary"
-                    (click)="addSection(detail)"
-                  >
-                    + افزودن بخش
-                  </button>
-                </div>
-                @for (section of detail.sections; track $index; let i = $index) {
-                  <div class="narrative-editor">
-                    <div class="panel-header">
-                      <h4>{{ (i + 1).toLocaleString('fa-IR') }}. {{ section.title }}</h4>
-                      <div class="inline-actions">
-                        <button
-                          type="button"
-                          class="admin-btn btn-secondary"
-                          (click)="move(detail.sections, i, -1)"
-                          [disabled]="i === 0"
-                          aria-label="انتقال بخش به بالا"
-                        >
-                          ↑
-                        </button>
-                        <button
-                          type="button"
-                          class="admin-btn btn-secondary"
-                          (click)="move(detail.sections, i, 1)"
-                          [disabled]="i === detail.sections.length - 1"
-                          aria-label="انتقال بخش به پایین"
-                        >
-                          ↓
-                        </button>
-                        <button
-                          type="button"
-                          class="admin-btn btn-danger"
-                          (click)="detail.sections.splice(i, 1)"
-                        >
-                          حذف
-                        </button>
-                      </div>
-                    </div>
-                    <app-admin-fields [value]="section" [fields]="fields.sectionMetadata" />
-                    @if (editingSection() === section.id) {
-                      <app-rich-editor
-                        [value]="richHtml.section(section)"
-                        (valueChange)="section.html = $event"
-                      />
-                    } @else {
-                      <button
-                        type="button"
-                        class="admin-btn btn-secondary"
-                        (click)="editingSection.set(section.id)"
-                      >
-                        ویرایش متن، عکس و فایل با CKEditor
-                      </button>
-                      <app-rich-content [html]="richHtml.section(section)" />
-                    }
-                  </div>
-                } @empty {
-                  <p class="muted">بخش‌های چالش، نقش شما، تصمیم‌های طراحی و نتیجه را اضافه کنید.</p>
-                }
-              </section>
-              <section class="editor-panel">
-                <div class="panel-header">
-                  <h3>پروژهٔ پیشنهادی</h3>
-                  @if (detail.nextProject) {
-                    <button
-                      type="button"
-                      class="admin-btn btn-danger"
-                      (click)="detail.nextProject = undefined"
-                    >
-                      حذف پیشنهاد
-                    </button>
-                  } @else {
-                    <button
-                      type="button"
-                      class="admin-btn btn-secondary"
-                      (click)="enableNext(detail)"
-                    >
-                      + افزودن پیشنهاد
-                    </button>
-                  }
-                </div>
-                @if (detail.nextProject; as next) {
-                  <label class="form-group"
-                    >انتخاب از مطالعه‌های موردی موجود<select
-                      (change)="pickNext(detail, $any($event.target).value)"
-                    >
-                      <option value="">یک پروژه انتخاب کنید…</option>
-                      @for (item of data.caseStudiesList; track item.id) {
-                        @if (item.id !== project.id) {
-                          <option [value]="item.id">{{ item.title }} — {{ item.subtitle }}</option>
-                        }
-                      }
-                    </select></label
-                  >
-                  <app-admin-fields [value]="next" [fields]="fields.next" />
-                  <app-tag-picker
-                    [tags]="data.tags"
-                    [selected]="next.tags"
-                    (selectedChange)="next.tags = $event"
-                  />
-                }
-              </section>
-            }
-          } @else {
-            <p class="empty-state">
-              هنوز مطالعهٔ موردی‌ای ندارید. نخستین پروژه را از بالای صفحه بسازید.
-            </p>
+              <app-admin-help [title]="item.label" [text]="item.help" />
+            </div>
           }
+        </nav>
+        <p class="storage-note">
+          Save page publishes all changes on the current sidebar page. Other pages stay as drafts.
+        </p>
+      </aside>
+      <main class="admin-content">
+        @if (auth.error()) {
+          <p role="alert">{{ auth.error() }}</p>
         }
-        @case ('tags') {
-          <div class="page-heading">
-            <span class="eyebrow">کتابخانهٔ مشترک</span>
-            <h1>تگ‌ها</h1>
-            <p>
-              تگ‌ها را اینجا بسازید یا نامشان را تغییر دهید؛ سپس آن‌ها را در پروژه‌ها انتخاب کنید.
-              تغییر نام در همهٔ محل‌های استفاده اعمال می‌شود.
-            </p>
-          </div>
-          <form class="tag-create" (ngSubmit)="addTag()">
-            <label class="form-group"
-              >تگ جدید<input
-                type="text"
-                dir="auto"
-                name="newTag"
-                [(ngModel)]="newTag"
-                placeholder="مثلاً طراحی محصول" /></label
-            ><button type="submit" class="admin-btn btn-primary">+ ایجاد تگ</button>
-          </form>
-          <div class="tag-library">
-            @for (tag of data.tags; track tag.id) {
-              <div class="tag-library-row">
-                <label class="form-group"
-                  >نام تگ<input type="text" dir="auto" [(ngModel)]="tag.name" /></label
-                ><span class="muted"
-                  >{{ tagUsage(tag.id).toLocaleString('fa-IR') }} بار استفاده</span
-                ><button type="button" class="admin-btn btn-danger" (click)="deleteTag(tag.id)">
-                  حذف
-                </button>
-              </div>
-            }
-          </div>
+        @if (media.error()) {
+          <p role="alert" class="muted">{{ media.error() }}</p>
         }
-        @case ('home-projects') {
-          <div class="page-heading">
-            <span class="eyebrow">صفحهٔ اصلی</span>
-            <h1>پروژه‌های صفحهٔ اصلی</h1>
-            <p>
-              کارت‌های صفحهٔ اصلی و ترتیب آن‌ها را مدیریت کنید. از ویرایشگر مطالعهٔ موردی هم
-              می‌توانید پروژه را به صفحهٔ اصلی اضافه کنید.
-            </p>
-          </div>
-          <button type="button" class="admin-btn btn-primary" (click)="addHomeProject()">
-            + افزودن پروژه به خانه
-          </button>
-          @for (project of data.homeProjects; track $index; let i = $index) {
+        <div id="admin-toast" [class.toast-hidden]="!toast()" role="status" aria-live="polite">
+          {{ toast() }}
+        </div>
+        @switch (tab()) {
+          @case ('hero') {
+            <div class="page-heading">
+              <span class="eyebrow">Home page</span>
+              <h1>
+                Hero and resume<app-admin-help
+                  title="Hero and resume"
+                  text="عکس، نام، عنوان شغلی، دکمه‌های معرفی و فایل رزومه در بالای سایت را از اینجا تغییر دهید."
+                />
+              </h1>
+              <p>Edit your portrait, introduction, buttons and resume.</p>
+            </div>
+            <app-admin-fields [value]="data.hero" [fields]="fields.hero" />
+
             <section class="editor-panel">
-              <div class="panel-header">
-                <h3>{{ project.title }}</h3>
-                <div class="inline-actions">
-                  <button
-                    type="button"
-                    class="admin-btn btn-secondary"
-                    (click)="move(data.homeProjects, i, -1)"
-                    [disabled]="i === 0"
-                    aria-label="انتقال پروژه به بالا"
-                  >
-                    ↑
-                  </button>
-                  <button
-                    type="button"
-                    class="admin-btn btn-secondary"
-                    (click)="move(data.homeProjects, i, 1)"
-                    [disabled]="i === data.homeProjects.length - 1"
-                    aria-label="انتقال پروژه به پایین"
-                  >
-                    ↓
-                  </button>
-                  <button
-                    type="button"
-                    class="admin-btn btn-danger"
-                    (click)="data.homeProjects.splice(i, 1)"
-                  >
-                    حذف
-                  </button>
-                </div>
-              </div>
-              <app-admin-fields [value]="project" [fields]="fields.homeProject" />
-              <app-tag-picker
-                [tags]="data.tags"
-                [selected]="project.tags"
-                (selectedChange)="project.tags = $event"
+              <h3>
+                Resume download<app-admin-help
+                  title="Resume download"
+                  text="رزومه را به صورت PDF، DOC یا DOCX آپلود کنید یا آدرس فایل را بدهید. این فایل مقصد دکمه دانلود رزومه می‌شود."
+                />
+              </h3>
+              <app-media-field
+                label="Resume"
+                help="فایل PDF، DOC یا DOCX رزومه را آپلود کنید یا آدرس فایل را وارد کنید. همین فایل از دکمه رزومه دانلود می‌شود."
+                kind="document"
+                [value]="data.hero.ctaSecondaryLink"
+                (valueChange)="data.hero.ctaSecondaryLink = $event"
+                (fileNameChange)="data.hero.cvFileName = $event"
               />
-              <label class="form-group"
-                >اتصال به مطالعهٔ موردی موجود<select
-                  [ngModel]="project.caseStudyUrl"
-                  (ngModelChange)="project.caseStudyUrl = $event"
+              <label [attr.for]="'admin-data-hero-cvFileName'" class="form-group"
+                ><span
+                  >Download filename<app-admin-help
+                    title="Download filename"
+                    text="نام پیشنهادی فایل هنگام دانلود رزومه است؛ پسوند فایل را هم بنویسید، مثلاً Maryam-CV.pdf." /></span
+                ><input
+                  [id]="'admin-data-hero-cvFileName'"
+                  type="text"
+                  dir="auto"
+                  [(ngModel)]="data.hero.cvFileName"
+                  placeholder="resume.pdf"
+              /></label>
+            </section>
+            <app-admin-collection
+              label="Floating badge"
+              help="دو گرافیک فعلی سایت اینجا به صورت پیش‌فرض قرار دارند. در هر مورد Badge SVG را آپلود کنید تا همان گرافیک با حفظ انیمیشن جایگزین شود. Position جایگاه و انیمیشن را تعیین می‌کند؛ در پایان دکمهٔ Save page را بزنید."
+              [items]="data.hero.badges"
+              [fields]="fields.badge"
+              [emptyItem]="{
+                label: 'New badge',
+                icon: '',
+                image: defaultBadgeImage('card-top-right'),
+                positionClass: 'card-top-right',
+              }"
+            />
+          }
+          @case ('header') {
+            <div class="page-heading">
+              <span class="eyebrow">Site navigation</span>
+              <h1>
+                Header and logo<app-admin-help
+                  title="Header and logo"
+                  text="لوگو، لینک‌های منوی بالای سایت و دکمه تماس را مدیریت کنید. لینک بخش‌های صفحه اصلی را به صورت /#about وارد کنید."
+                />
+              </h1>
+              <p>Edit the site logo and navigation links.</p>
+            </div>
+            <app-admin-fields [value]="data.header" [fields]="fields.header" />
+
+            <h3>
+              Contact button<app-admin-help
+                title="Contact button"
+                text="متن و مقصد دکمه تماس در منوی بالای سایت را تنظیم می‌کند."
+              />
+            </h3>
+            <app-admin-fields [value]="data.header.ctaButton" [fields]="fields.cta" />
+
+            <app-admin-collection
+              label="Menu link"
+              help="پیوند منو؛ با Add مورد جدید بسازید. با فلش‌ها ترتیب را عوض کنید و با Delete مورد را حذف کنید. سپس دکمهٔ Save page را بزنید."
+              [items]="data.header.navLinks"
+              [fields]="fields.nav"
+              [emptyItem]="{ label: 'New link', href: '/' }"
+            />
+          }
+          @case ('projects') {
+            <div class="page-heading">
+              <span class="eyebrow">Case studies</span>
+              <h1>
+                Projects and case studies<app-admin-help
+                  title="Projects and case studies"
+                  text="هر پروژه یک کارت و صفحه جزئیات مستقل دارد. پروژه را انتخاب کنید تا کارت، معرفی، بخش‌های داستان و پیشنهاد انتهای آن را ویرایش کنید."
+                />
+              </h1>
+              <p>Create, edit or delete a complete case study.</p>
+            </div>
+            <div class="panel-header">
+              <label [attr.for]="'admin-currentProject-id-'" class="form-group project-select"
+                ><span
+                  >Select case study<app-admin-help
+                    title="Select case study"
+                    text="پروژه‌ای را انتخاب کنید که می‌خواهید کارت و صفحه جزئیات آن را ویرایش کنید." /></span
+                ><select
+                  [id]="'admin-currentProject-id-'"
+                  [ngModel]="currentProject?.id || ''"
+                  (ngModelChange)="selectedId.set($event)"
                 >
-                  <option [value]="project.caseStudyUrl">پیوند فعلی</option>
-                  @for (item of data.caseStudiesList; track item.id) {
-                    <option [value]="'/project-detail?id=' + item.id">
-                      {{ item.title }} — {{ item.subtitle }}
+                  @for (project of data.caseStudiesList; track project.id) {
+                    <option [value]="project.id">
+                      {{ project.title }} — {{ project.subtitle }}
                     </option>
                   }
                 </select></label
               >
-            </section>
+              <button type="button" (click)="addProject()" class="admin-btn btn-primary">
+                + Create case study
+              </button>
+            </div>
+            @if (currentProject; as project) {
+              <section class="editor-panel">
+                <div class="panel-header">
+                  <h3>
+                    Project listing card<app-admin-help
+                      title="Project listing card"
+                      text="عنوان، توضیح، تصویر و دکمه کارت در صفحه فهرست پروژه‌ها را تنظیم می‌کند."
+                    />
+                  </h3>
+                  <div class="inline-actions">
+                    <a
+                      [portfolioLink]="'/project-detail?id=' + project.id"
+                      target="_blank"
+                      class="admin-btn btn-secondary"
+                      >↗ Preview</a
+                    ><button type="button" class="admin-btn btn-danger" (click)="deleteCurrent()">
+                      Delete case study
+                    </button>
+                  </div>
+                </div>
+                <app-admin-fields
+                  [value]="project"
+                  [fields]="fields.project"
+                  (changed)="syncHome(project)"
+                />
+                <app-tag-picker
+                  [tags]="data.tags"
+                  [selected]="project.tags"
+                  (selectedChange)="setProjectTags(project, $event)"
+                />
+                <label class="checkbox-row"
+                  ><input
+                    type="checkbox"
+                    [checked]="isFeatured(project.id)"
+                    (change)="toggleFeatured(project)"
+                  />
+                  Feature this project on the home page</label
+                >
+                <app-admin-help
+                  title="Feature on home page"
+                  text="اگر فعال باشد، این پروژه به کارت‌های صفحه اصلی اضافه می‌شود. غیرفعال کردن فقط کارت صفحه اصلی را حذف می‌کند؛ خود مطالعه موردی باقی می‌ماند."
+                />
+              </section>
+              @if (currentDetail; as detail) {
+                <section class="editor-panel">
+                  <h3>
+                    Case study introduction<app-admin-help
+                      title="Case study introduction"
+                      text="عنوان، زیرعنوان، خلاصه و تصویر بالای صفحه جزئیات همین پروژه را تنظیم می‌کند."
+                    />
+                  </h3>
+                  <app-admin-fields [value]="detail" [fields]="fields.detail" />
+                  <app-tag-picker
+                    [tags]="data.tags"
+                    [selected]="detail.tags"
+                    (selectedChange)="setProjectTags(project, $event)"
+                  />
+                  <app-admin-collection
+                    label="Project metadata"
+                    help="اطلاعات پروژه؛ با Add مورد جدید بسازید. با فلش‌ها ترتیب را عوض کنید و با Delete مورد را حذف کنید. سپس دکمهٔ Save page را بزنید."
+                    [items]="detail.meta"
+                    [fields]="fields.meta"
+                    [emptyItem]="{ label: '', value: '' }"
+                  />
+                </section>
+                <section class="editor-panel">
+                  <div class="panel-header">
+                    <h3>
+                      Case study sections<app-admin-help
+                        title="Case study sections"
+                        text="هر بخش یک عنوان و شناسه یکتا دارد و در فهرست کناری پروژه نمایش داده می‌شود. با ویرایشگر، متن، عکس و فایل اضافه کنید و با فلش‌ها ترتیب بخش‌ها را عوض کنید."
+                      />
+                    </h3>
+                    <button
+                      type="button"
+                      class="admin-btn btn-secondary"
+                      (click)="addSection(detail)"
+                    >
+                      + Add section
+                    </button>
+                  </div>
+                  @for (section of detail.sections; track $index; let i = $index) {
+                    <div class="narrative-editor">
+                      <div class="panel-header">
+                        <h4>{{ (i + 1).toLocaleString('en-US') }}. {{ section.title }}</h4>
+                        <div class="inline-actions">
+                          <button
+                            type="button"
+                            class="admin-btn btn-secondary"
+                            (click)="move(detail.sections, i, -1)"
+                            [disabled]="i === 0"
+                            aria-label="Move section up"
+                          >
+                            ↑
+                          </button>
+                          <button
+                            type="button"
+                            class="admin-btn btn-secondary"
+                            (click)="move(detail.sections, i, 1)"
+                            [disabled]="i === detail.sections.length - 1"
+                            aria-label="Move section down"
+                          >
+                            ↓
+                          </button>
+                          <button
+                            type="button"
+                            class="admin-btn btn-danger"
+                            (click)="detail.sections.splice(i, 1)"
+                          >
+                            Delete
+                          </button>
+                        </div>
+                      </div>
+                      <app-admin-fields [value]="section" [fields]="fields.sectionMetadata" />
+                      @if (editingSection() === section.id) {
+                        <app-rich-editor
+                          [value]="richHtml.section(section)"
+                          (valueChange)="section.html = $event"
+                        />
+                      } @else {
+                        <button
+                          type="button"
+                          class="admin-btn btn-secondary"
+                          (click)="editingSection.set(section.id)"
+                        >
+                          Edit text, images and files
+                        </button>
+                        <app-rich-content [html]="richHtml.section(section)" />
+                      }
+                    </div>
+                  } @empty {
+                    <p class="muted">
+                      Add sections for the challenge, your role, design decisions and results.
+                    </p>
+                  }
+                </section>
+                <section class="editor-panel">
+                  <div class="panel-header">
+                    <h3>
+                      Recommended project<app-admin-help
+                        title="Recommended project"
+                        text="کارت پروژه بعدی در انتهای این مطالعه موردی است. یک پروژه موجود را انتخاب کنید یا مشخصات و لینک آن را دستی وارد کنید."
+                      />
+                    </h3>
+                    @if (detail.nextProject) {
+                      <button
+                        type="button"
+                        class="admin-btn btn-danger"
+                        (click)="detail.nextProject = undefined"
+                      >
+                        Remove recommendation
+                      </button>
+                    } @else {
+                      <button
+                        type="button"
+                        class="admin-btn btn-secondary"
+                        (click)="enableNext(detail)"
+                      >
+                        + Add recommendation
+                      </button>
+                    }
+                  </div>
+                  @if (detail.nextProject; as next) {
+                    <label [attr.for]="'admin-14369'" class="form-group"
+                      ><span
+                        >Choose an existing case study<app-admin-help
+                          title="Choose an existing case study"
+                          text="اطلاعات پروژه انتخاب‌شده در کارت پیشنهاد انتهای این مطالعه موردی کپی می‌شود." /></span
+                      ><select
+                        [id]="'admin-14369'"
+                        (change)="pickNext(detail, $any($event.target).value)"
+                      >
+                        <option value="">Select a project…</option>
+                        @for (item of data.caseStudiesList; track item.id) {
+                          @if (item.id !== project.id) {
+                            <option [value]="item.id">
+                              {{ item.title }} — {{ item.subtitle }}
+                            </option>
+                          }
+                        }
+                      </select></label
+                    >
+                    <app-admin-fields [value]="next" [fields]="fields.next" />
+                    <app-tag-picker
+                      [tags]="data.tags"
+                      [selected]="next.tags"
+                      (selectedChange)="next.tags = $event"
+                    />
+                  }
+                </section>
+              }
+            } @else {
+              <p class="empty-state">No case studies yet. Create your first project above.</p>
+            }
           }
-        }
-        @case ('about') {
-          <div class="page-heading">
-            <span class="eyebrow">صفحهٔ اصلی</span>
-            <h1>دربارهٔ من و مهارت‌ها</h1>
-          </div>
-          <app-admin-fields [value]="data.about" [fields]="fields.about" />
-          <app-admin-collection
-            label="کارت اطلاعات"
-            [items]="data.about.stats"
-            [fields]="fields.stat"
-            [emptyItem]="{ value: '', label: '' }"
-          />
-        }
-        @case ('experience') {
-          <div class="page-heading">
-            <span class="eyebrow">صفحهٔ اصلی</span>
-            <h1>سوابق کاری</h1>
-          </div>
-          <app-admin-collection
-            label="سوابق کاری"
-            [items]="data.experiences"
-            [fields]="fields.experience"
-            [emptyItem]="{ role: '', company: '', period: '' }"
-          />
-        }
-        @case ('testimonials') {
-          <div class="page-heading">
-            <span class="eyebrow">صفحهٔ اصلی</span>
-            <h1>نظرات همکاران</h1>
-          </div>
-          <app-admin-collection
-            label="نظر"
-            [items]="data.testimonials"
-            [fields]="fields.testimonial"
-            [emptyItem]="{ name: '', role: '', initials: '', quote: '' }"
-          />
-        }
-        @case ('photos') {
-          <div class="page-heading">
-            <span class="eyebrow">صفحهٔ اصلی</span>
-            <h1>گالری عکس‌ها</h1>
-          </div>
-          <app-admin-collection
-            label="عکس"
-            [items]="data.lifePhotos"
-            [fields]="fields.photo"
-            [emptyItem]="{ image: '', caption: '' }"
-          />
-        }
-        @case ('partners') {
-          <div class="page-heading">
-            <span class="eyebrow">صفحهٔ اصلی</span>
-            <h1>نوار مهارت‌ها</h1>
-          </div>
-          <label class="form-group"
-            >عنوان مهارت‌ها؛ هر مورد در یک خط<textarea
-              dir="auto"
-              rows="10"
-              [ngModel]="data.partners.join('\n')"
-              (ngModelChange)="setPartners($event)"
-            ></textarea>
-          </label>
-        }
-        @case ('footer') {
-          <div class="page-heading">
-            <span class="eyebrow">اطلاعات تماس</span>
-            <h1>پاورقی و شبکه‌های اجتماعی</h1>
-          </div>
-          <app-admin-fields [value]="data.footer" [fields]="fields.footer" />
-          <app-admin-collection
-            label="پیوند شبکهٔ اجتماعی"
-            [items]="data.footer.socials"
-            [fields]="fields.social"
-            [emptyItem]="{ label: '', link: '' }"
-          />
-        }
-        @case ('content') {
-          <div class="page-heading">
-            <span class="eyebrow">متن‌های سایت</span>
-            <h1>عنوان‌ها و متن دکمه‌ها</h1>
-            <p>برای نمایش بخشی از عنوان به رنگ آبی، از قالب‌بندی رنگیِ عنوان استفاده کنید.</p>
-          </div>
-          <app-admin-fields [value]="data.content" [fields]="fields.content" />
-        }
-        @case ('html') {
-          <div class="page-heading">
-            <h1>کد سفارشی</h1>
-            <p>محتوای سفارشی پیش از بخش معرفی نمایش داده می‌شود. کدهای اجرایی اجرا نمی‌شوند.</p>
-          </div>
-          <label class="form-group"
-            >کد سفارشی<textarea
-              dir="auto"
-              rows="15"
-              class="code-font"
-              [(ngModel)]="data.customHtmlEmbed"
-            ></textarea>
-          </label>
-        }
-        @case ('backup') {
-          <div class="page-heading">
-            <h1>پشتیبان‌گیری و بازنشانی</h1>
-            <p>از محتوای فعلی، عکس‌های آپلودشده و فایل رزومه خروجی پشتیبان بگیرید.</p>
-          </div>
-          <div class="backup-actions">
+          @case ('tags') {
+            <div class="page-heading">
+              <span class="eyebrow">Shared library</span>
+              <h1>
+                Tags<app-admin-help
+                  title="Tags"
+                  text="تگ را یک بار بسازید و در چند پروژه انتخاب کنید. تغییر نام در همه جا اعمال می‌شود. کلیک روی هر تگ در سایت، صفحهٔ کیس‌استادی‌ها را با فیلتر همان تگ باز می‌کند."
+                />
+              </h1>
+              <p>Create reusable tags. Clicking a tag opens the filtered case study list.</p>
+            </div>
+            <form class="tag-create" (ngSubmit)="addTag()">
+              <label [attr.for]="'admin-newTag'" class="form-group"
+                ><span
+                  >New tag<app-admin-help
+                    title="New tag"
+                    text="نام یک تگ یکتا را بنویسید و Create tag را بزنید. بعد آن را از داخل پروژه‌ها انتخاب کنید." /></span
+                ><input
+                  [id]="'admin-newTag'"
+                  type="text"
+                  dir="auto"
+                  name="newTag"
+                  [(ngModel)]="newTag"
+                  placeholder="e.g. Product design"
+              /></label>
+              <label [attr.for]="'admin-newTagLink'" class="form-group"
+                ><span
+                  >Tag link (optional)
+                  <app-admin-help
+                    title="Tag link (optional)"
+                    text="این آدرس به‌عنوان اطلاعات تکمیلی تگ ذخیره می‌شود. کلیک روی تگ‌های کیس‌استادی همیشه فهرست پروژه‌ها را با فیلتر همان تگ باز می‌کند." /></span
+                ><input
+                  [id]="'admin-newTagLink'"
+                  type="text"
+                  dir="ltr"
+                  name="newTagLink"
+                  [(ngModel)]="newTagLink"
+                  placeholder="https://example.com"
+                />
+              </label>
+              <button type="submit" class="admin-btn btn-primary">+ Create tag</button>
+            </form>
+            <div class="tag-library">
+              @for (tag of data.tags; track tag.id) {
+                <div class="tag-library-row">
+                  <label [attr.for]="'tag-name-' + tag.id" class="form-group"
+                    ><span
+                      >Tag name<app-admin-help
+                        title="Tag name"
+                        text="نام این تگ را تغییر می‌دهد. تغییر نام پس از ذخیره در همه پروژه‌هایی که این تگ را دارند دیده می‌شود." /></span
+                    ><input
+                      [id]="'tag-name-' + tag.id"
+                      type="text"
+                      dir="auto"
+                      [(ngModel)]="tag.name"
+                  /></label>
+                  <label [attr.for]="'tag-link-' + tag.id" class="form-group"
+                    ><span
+                      >Tag link (optional)
+                      <app-admin-help
+                        title="Tag link (optional)"
+                        text="این آدرس به‌عنوان اطلاعات تکمیلی تگ ذخیره می‌شود. کلیک روی تگ‌های کیس‌استادی همیشه فهرست پروژه‌ها را با فیلتر همان تگ باز می‌کند." /></span
+                    ><input
+                      [id]="'tag-link-' + tag.id"
+                      type="text"
+                      dir="ltr"
+                      [(ngModel)]="tag.link"
+                      placeholder="https://example.com"
+                    />
+                  </label>
+                  <span class="muted">{{ tagUsage(tag.id).toLocaleString('en-US') }} uses</span
+                  ><button type="button" class="admin-btn btn-danger" (click)="deleteTag(tag.id)">
+                    Delete
+                  </button>
+                </div>
+              }
+            </div>
+          }
+          @case ('home-projects') {
+            <div class="page-heading">
+              <span class="eyebrow">Home page</span>
+              <h1>
+                Home projects<app-admin-help
+                  title="Home projects"
+                  text="کارت‌های صفحه اصلی و ترتیب نمایششان را مدیریت کنید. دکمه‌های بالا و پایین ترتیب را عوض می‌کنند. مقصد هر کارت را می‌توانید به یک مطالعه موردی متصل کنید."
+                />
+              </h1>
+              <p>
+                Manage home page cards and their order. You can also feature a case study from its
+                editor.
+              </p>
+            </div>
+            <button type="button" class="admin-btn btn-primary" (click)="addHomeProject()">
+              + Add home project
+            </button>
+            @for (project of data.homeProjects; track $index; let i = $index) {
+              <section class="editor-panel">
+                <div class="panel-header">
+                  <h3>{{ project.title }}</h3>
+                  <div class="inline-actions">
+                    <button
+                      type="button"
+                      class="admin-btn btn-secondary"
+                      (click)="move(data.homeProjects, i, -1)"
+                      [disabled]="i === 0"
+                      aria-label="Move project up"
+                    >
+                      ↑
+                    </button>
+                    <button
+                      type="button"
+                      class="admin-btn btn-secondary"
+                      (click)="move(data.homeProjects, i, 1)"
+                      [disabled]="i === data.homeProjects.length - 1"
+                      aria-label="Move project down"
+                    >
+                      ↓
+                    </button>
+                    <button
+                      type="button"
+                      class="admin-btn btn-danger"
+                      (click)="data.homeProjects.splice(i, 1)"
+                    >
+                      Delete
+                    </button>
+                  </div>
+                </div>
+                <app-admin-fields [value]="project" [fields]="fields.homeProject" />
+                <app-tag-picker
+                  [tags]="data.tags"
+                  [selected]="project.tags"
+                  (selectedChange)="project.tags = $event"
+                />
+                <label [attr.for]="'home-project-link-' + i" class="form-group"
+                  ><span
+                    >Link to an existing case study<app-admin-help
+                      title="Link to an existing case study"
+                      text="مقصد دکمه این کارت در صفحه اصلی را به صفحه جزئیات یک پروژه موجود وصل می‌کند." /></span
+                  ><select
+                    [id]="'home-project-link-' + i"
+                    [ngModel]="project.caseStudyUrl"
+                    (ngModelChange)="project.caseStudyUrl = $event"
+                  >
+                    <option [value]="project.caseStudyUrl">Current link</option>
+                    @for (item of data.caseStudiesList; track item.id) {
+                      <option [value]="'/project-detail?id=' + item.id">
+                        {{ item.title }} — {{ item.subtitle }}
+                      </option>
+                    }
+                  </select></label
+                >
+              </section>
+            }
+          }
+          @case ('about') {
+            <div class="page-heading">
+              <span class="eyebrow">Home page</span>
+              <h1>
+                About and skills<app-admin-help
+                  title="About and skills"
+                  text="زندگی‌نامه، ویژگی‌های تیم دلخواه، مهارت‌ها و کارت‌های آماری بخش درباره من را ویرایش کنید."
+                />
+              </h1>
+            </div>
+            <app-admin-fields [value]="data.about" [fields]="fields.about" />
+
+            <app-admin-collection
+              label="Stat card"
+              help="کارت اطلاعات؛ با Add مورد جدید بسازید. با فلش‌ها ترتیب را عوض کنید و با Delete مورد را حذف کنید. سپس دکمهٔ Save page را بزنید."
+              [items]="data.about.stats"
+              [fields]="fields.stat"
+              [emptyItem]="{ value: '', label: '' }"
+            />
+          }
+          @case ('experience') {
+            <div class="page-heading">
+              <span class="eyebrow">Home page</span>
+              <h1>
+                Work experience<app-admin-help
+                  title="Work experience"
+                  text="هر مورد یک سابقه کاری است. نقش، شرکت و بازه زمانی را بنویسید و با دکمه‌های بالا و پایین ترتیب را تنظیم کنید."
+                />
+              </h1>
+            </div>
+            <app-admin-collection
+              label="Work experience"
+              help="سوابق کاری؛ با Add مورد جدید بسازید. با فلش‌ها ترتیب را عوض کنید و با Delete مورد را حذف کنید. سپس دکمهٔ Save page را بزنید."
+              [items]="data.experiences"
+              [fields]="fields.experience"
+              [emptyItem]="{ role: '', company: '', period: '' }"
+            />
+          }
+          @case ('testimonials') {
+            <div class="page-heading">
+              <span class="eyebrow">Home page</span>
+              <h1>
+                Testimonials<app-admin-help
+                  title="Testimonials"
+                  text="نظرات نمایش‌داده‌شده در اسلایدر را مدیریت کنید. نسخه کوتاه در کارت و متن کامل با Read more نمایش داده می‌شود."
+                />
+              </h1>
+            </div>
+            <app-admin-collection
+              label="Testimonial"
+              help="نظر؛ با Add مورد جدید بسازید. با فلش‌ها ترتیب را عوض کنید و با Delete مورد را حذف کنید. سپس دکمهٔ Save page را بزنید."
+              [items]="data.testimonials"
+              [fields]="fields.testimonial"
+              [emptyItem]="{ name: '', role: '', initials: '', quote: '' }"
+            />
+          }
+          @case ('photos') {
+            <div class="page-heading">
+              <span class="eyebrow">Home page</span>
+              <h1>
+                Photo gallery<app-admin-help
+                  title="Photo gallery"
+                  text="عکس‌های گالری و توضیح هر عکس را مدیریت کنید. بازدیدکننده با کلیک، فایل اصلی عکس را تمام‌صفحه می‌بیند؛ تصویر با وضوح کافی آپلود کنید."
+                />
+              </h1>
+            </div>
+            <app-admin-collection
+              label="Photo"
+              help="عکس؛ با Add مورد جدید بسازید. با فلش‌ها ترتیب را عوض کنید و با Delete مورد را حذف کنید. سپس دکمهٔ Save page را بزنید."
+              [items]="data.lifePhotos"
+              [fields]="fields.photo"
+              [emptyItem]="{ image: '', caption: '' }"
+            />
+          }
+          @case ('partners') {
+            <div class="page-heading">
+              <span class="eyebrow">Home page</span>
+              <h1>
+                Skills ticker<app-admin-help
+                  title="Skills ticker"
+                  text="این متن‌ها همراه ستاره در نوار متحرک بالای سایت تکرار می‌شوند. هر عنوان را در یک خط جداگانه وارد کنید."
+                />
+              </h1>
+            </div>
+            <label [attr.for]="'admin-data-partners-join-n-'" class="form-group"
+              ><span
+                >Skills (one per line)<app-admin-help
+                  title="Skills (one per line)"
+                  text="هر متن را در یک خط جدا وارد کنید؛ خطوط به صورت پیوسته همراه ستاره در نوار بالای سایت حرکت می‌کنند." /></span
+              ><textarea
+                [id]="'admin-data-partners-join-n-'"
+                dir="auto"
+                rows="10"
+                [ngModel]="data.partners.join('\n')"
+                (ngModelChange)="setPartners($event)"
+              ></textarea>
+            </label>
+          }
+          @case ('footer') {
+            <div class="page-heading">
+              <span class="eyebrow">Contact information</span>
+              <h1>
+                Footer and social links<app-admin-help
+                  title="Footer and social links"
+                  text="عنوان دعوت به تماس، وضعیت همکاری، لینک‌های اجتماعی و متن حقوق نشر پایین سایت را ویرایش کنید."
+                />
+              </h1>
+            </div>
+            <app-admin-fields [value]="data.footer" [fields]="fields.footer" />
+
+            <app-admin-collection
+              label="Social link"
+              help="پیوند شبکهٔ اجتماعی؛ با Add مورد جدید بسازید. با فلش‌ها ترتیب را عوض کنید و با Delete مورد را حذف کنید. سپس دکمهٔ Save page را بزنید."
+              [items]="data.footer.socials"
+              [fields]="fields.social"
+              [emptyItem]="{ label: '', link: '', icon: 'link', image: '' }"
+            />
+          }
+          @case ('content') {
+            <div class="page-heading">
+              <span class="eyebrow">Site copy</span>
+              <h1>
+                Headings and button text<app-admin-help
+                  title="Headings and button text"
+                  text="متن مشترک عنوان بخش‌ها و دکمه‌های سایت را تغییر دهید. برای رنگ آبی بخشی از عنوان می‌توانید از span با کلاس text-blue استفاده کنید."
+                />
+              </h1>
+              <p>Use heading markup to highlight part of a title in blue.</p>
+            </div>
+            <app-admin-fields [value]="data.content" [fields]="fields.content" />
+          }
+          @case ('media') {
+            <div class="page-heading">
+              <h1>
+                Uploaded files
+                <app-admin-help
+                  title="Uploaded files"
+                  text="همه فایل‌های آپلودشده روی سرور را ببینید. حذف فقط برای فایل بدون استفاده ممکن است. برای حذف فایل استفاده‌شده، ابتدا لینک آن را از محتوا بردارید و دکمهٔ Save page را بزنید."
+                />
+              </h1>
+            </div>
             <button
               type="button"
-              (click)="exportBackup()"
-              [disabled]="exporting()"
               class="admin-btn btn-secondary"
+              (click)="refreshMedia()"
+              [disabled]="mediaLoading()"
             >
-              {{ exporting() ? 'در حال تهیهٔ خروجی…' : '↓ دریافت پشتیبان کامل' }}
+              {{ mediaLoading() ? 'Loading…' : 'Refresh files' }}
             </button>
-            <button type="button" (click)="reset()" class="admin-btn btn-danger">
-              بازگردانی تنظیمات اولیه
-            </button>
-          </div>
+            <div class="media-library">
+              @for (file of media.files(); track file.id) {
+                <article>
+                  @if (file.kind === 'image') {
+                    <img [src]="file.url" [alt]="file.name" loading="lazy" />
+                  }
+                  <a [href]="file.url" target="_blank" rel="noopener">{{ file.name }}</a>
+                  <p>
+                    {{ (file.size / 1024).toFixed(1) }} KB · {{ file.inUse ? 'In use' : 'Unused' }}
+                  </p>
+                  <button
+                    type="button"
+                    class="admin-btn btn-danger"
+                    [disabled]="file.inUse"
+                    (click)="deleteMedia(file.id, file.url)"
+                  >
+                    Delete file
+                  </button>
+                </article>
+              } @empty {
+                <p>No uploaded files.</p>
+              }
+            </div>
+          }
+          @case ('backup') {
+            <div class="page-heading">
+              <h1>
+                Backup and reset<app-admin-help
+                  title="Backup and reset"
+                  text="Download full backup محتوای ذخیره‌شده و فایل‌های آپلودشده را در یک فایل JSON دریافت می‌کند. Restore defaults پس از تأیید، محتوا را به نسخه اولیه برمی‌گرداند."
+                />
+              </h1>
+              <p>Export a backup of your content and uploaded files.</p>
+            </div>
+            <div class="backup-actions">
+              <button
+                type="button"
+                class="admin-btn btn-secondary"
+                (click)="importBrowser()"
+                [disabled]="importing() || store.saving()"
+              >
+                {{ importing() ? 'Importing…' : 'Import old browser content' }}
+              </button>
+              <label class="admin-btn btn-secondary backup-upload"
+                >Restore JSON backup<input
+                  type="file"
+                  accept=".json,application/json"
+                  [disabled]="importing() || store.saving()"
+                  (change)="importBackup($event)"
+              /></label>
+              <app-admin-help
+                title="Import and restore"
+                text="Import old browser content محتوای نسخه قدیمی را از همین مرورگر می‌خواند، فایل‌ها را به سرور منتقل می‌کند و محتوا را در دیتابیس ذخیره می‌کند. Restore JSON backup برای بازگردانی فایل پشتیبان است. هر دو پس از تأیید جایگزین محتوای فعلی سرور می‌شوند؛ نسخه مرورگر پاک نمی‌شود."
+              />
+              <button
+                type="button"
+                (click)="exportBackup()"
+                [disabled]="exporting() || importing() || store.saving()"
+                class="admin-btn btn-secondary"
+              >
+                {{ exporting() ? 'Exporting…' : '↓ Download full backup' }}
+              </button>
+              <button type="button" (click)="reset()" class="admin-btn btn-danger">
+                Restore defaults
+              </button>
+            </div>
+          }
+          @default {
+            <h1>
+              Page not found<app-admin-help
+                title="Page not found"
+                text="صفحه پیدا نشد؛ تنظیمات این بخش را ویرایش کنید و با دکمهٔ Save page ذخیره کنید."
+              />
+            </h1>
+            <a routerLink="/admin">Back to hero editor</a>
+          }
         }
-        @default {
-          <h1>صفحه پیدا نشد</h1>
-          <a routerLink="/admin">بازگشت به ویرایش معرفی</a>
-        }
-      }
-    </main>
+      </main>
+    </div>
+    <app-admin-help-dialog />
+    <app-admin-confirm
+      [request]="confirmation()"
+      (confirmed)="confirmPending()"
+      (cancelled)="cancelPending()"
+    />
   </div>
-  <app-admin-confirm
-    [request]="confirmation()"
-    (confirmed)="confirmPending()"
-    (cancelled)="cancelPending()"
-  />
-</div>
+}

@@ -1,45 +1,63 @@
 <div class="media-field">
-  <label class="form-group"
-    >نشانی {{ label() }}
+  <label class="form-group" [attr.for]="urlId"
+    ><span>{{ label() }} URL <app-admin-help [title]="label()" [text]="help()" /></span>
     <input
       type="text"
+      [id]="urlId"
+      [attr.aria-label]="label() + ' URL'"
       dir="ltr"
       [ngModel]="value().startsWith('asset:') ? '' : value()"
       (ngModelChange)="valueChange.emit($event)"
       [placeholder]="
-        kind() === 'image' ? 'نشانی تصویر یا انتخاب فایل' : 'نشانی رزومه یا انتخاب فایل'
+        kind() === 'svg'
+          ? 'SVG URL or upload an SVG file'
+          : kind() === 'image' || kind() === 'icon'
+            ? 'Image URL or upload a file'
+            : 'Resume URL or upload a file'
       "
     />
   </label>
-  @if (value().startsWith('asset:')) {
-    <p class="file-status">✓ {{ media.name(value()) || 'فایل آپلودشده آماده است' }}</p>
+  @if (value().startsWith('/api/media/')) {
+    <p class="file-status">✓ {{ media.name(value()) || 'Uploaded file is ready' }}</p>
   }
   <div class="media-actions">
     <label class="upload-button"
-      >{{ busy() ? 'در حال آپلود…' : '↑ انتخاب یا تعویض فایل' }}
+      >{{ busy() ? 'Uploading…' : '↑ Upload / replace file' }}
       <input
         type="file"
-        [attr.aria-label]="'انتخاب فایل ' + label()"
+        [attr.aria-label]="'Choose file: ' + label()"
         [accept]="
-          kind() === 'image'
-            ? 'image/jpeg,image/png,image/webp,image/gif,image/avif'
-            : '.pdf,.doc,.docx'
+          kind() === 'svg'
+            ? '.svg,image/svg+xml'
+            : kind() === 'image' || kind() === 'icon'
+              ? kind() === 'icon'
+                ? '.svg,image/svg+xml,image/jpeg,image/png,image/webp,image/gif,image/avif'
+                : 'image/jpeg,image/png,image/webp,image/gif,image/avif'
+              : '.pdf,.doc,.docx'
         "
         [disabled]="busy()"
         (change)="upload($event)"
       />
     </label>
-    @if (value()) {
+    @if (defaultValue()) {
+      <button
+        type="button"
+        (click)="valueChange.emit(defaultValue()); fileNameChange.emit('')"
+        [disabled]="value() === defaultValue()"
+      >
+        Use default SVG
+      </button>
+    } @else if (value()) {
       <button type="button" (click)="valueChange.emit(''); fileNameChange.emit('')">
-        حذف فایل
+        Remove file
       </button>
     }
   </div>
-  @if (value() && kind() === 'image') {
-    <img [src]="value() | mediaUrl" [alt]="'پیش‌نمایش ' + label()" class="media-preview" />
+  @if (value() && (kind() === 'image' || kind() === 'icon' || kind() === 'svg')) {
+    <img [src]="value() | mediaUrl" [alt]="'Preview: ' + label()" class="media-preview" />
   }
   @if (value() && kind() === 'document') {
-    <a [href]="value() | mediaUrl" target="_blank" rel="noopener">مشاهدهٔ رزومهٔ فعلی ↗</a>
+    <a [href]="value() | mediaUrl" target="_blank" rel="noopener">View current resume ↗</a>
   }
   @if (error()) {
     <p role="alert" class="field-error">{{ error() }}</p>

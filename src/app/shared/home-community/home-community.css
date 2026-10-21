@@ -20,7 +20,7 @@
 }
 .quote {
   font-size: 16px;
-  line-height: 1.2;
+  line-height: 1.3;
 }
 .quote p + p {
   margin-top: 10px;
@@ -57,7 +57,7 @@
   font-size: 14px;
 }
 .author-role {
-  font-size: 12px;
+  font-size: 16px;
   margin-top: 4px;
 }
 .author-link {
@@ -88,6 +88,7 @@
   object-fit: cover;
 }
 .photo-caption {
+  pointer-events: none;
   position: absolute;
   left: 0;
   right: 0;
@@ -123,5 +124,77 @@
   }
   .person-section {
     margin-bottom: 80px;
+  }
+}
+
+.photo-open {
+  display: block;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: zoom-in;
+}
+.photo-open:focus-visible {
+  outline: 3px solid var(--accent-blue);
+  outline-offset: -5px;
+}
+.photo-dialog {
+  width: 100vw;
+  height: 100dvh;
+  max-width: none;
+  max-height: none;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: #0b0b0df5;
+  color: white;
+  overflow: hidden;
+}
+.photo-dialog::backdrop {
+  background: #0b0b0d;
+}
+.photo-dialog > img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+.photo-close {
+  position: absolute;
+  top: max(16px, env(safe-area-inset-top));
+  right: max(16px, env(safe-area-inset-right));
+  z-index: 1;
+  width: 44px;
+  height: 44px;
+  border: 1px solid #ffffff60;
+  border-radius: 50%;
+  background: #161618cc;
+  color: white;
+  font-size: 32px;
+  cursor: pointer;
+}
+.photo-dialog-caption {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  padding: 24px 16px max(24px, env(safe-area-inset-bottom));
+  text-align: center;
+  pointer-events: none;
+  background: linear-gradient(transparent, #000b);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .photo-dialog[open] {
+    animation: gallery-appear 180ms ease-out;
+  }
+  @keyframes gallery-appear {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
   }
 }
