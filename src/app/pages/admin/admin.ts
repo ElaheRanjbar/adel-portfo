@@ -19,7 +19,7 @@ import { AdminEditor } from '../../core/admin-editor';
 import { MediaStore } from '../../core/media-store';
 import { PortfolioLink } from '../../core/portfolio-link';
 import { tagCollections } from '../../core/portfolio-normalize';
-import { CaseStudy, ProjectCard } from '../../core/portfolio.models';
+import { CaseContentBlock, CaseStudy, ProjectCard } from '../../core/portfolio.models';
 import { AdminFields } from '../../shared/admin-fields/admin-fields';
 import { AdminCollection } from '../../shared/admin-collection/admin-collection';
 import { MediaField } from '../../shared/media-field/media-field';
@@ -379,6 +379,18 @@ export class Admin implements OnDestroy {
       subsections: [],
     });
   }
+  addContentBlock(detail: CaseStudy, type: CaseContentBlock['type']): void {
+    const id = `block-${createId()}`;
+    const block: CaseContentBlock = type === 'image'
+      ? { id, type, image: '', note: '', width: 'full' }
+      : type === 'grid'
+        ? { id, type, columns: 2, images: [{ image: '', note: '' }, { image: '', note: '' }] }
+        : { id, type, title: '', text: '' };
+    (detail.contentBlocks ??= []).push(block);
+  }
+  addGridImage(block: Extract<CaseContentBlock, { type: 'grid' }>): void {
+    block.images.push({ image: '', note: '' });
+  }
   move<T>(items: T[], index: number, direction: number): void {
     const target = index + direction;
     if (target < 0 || target >= items.length) return;
@@ -501,6 +513,8 @@ export class Admin implements OnDestroy {
       section.paragraphs ??= [];
       section.subsections ??= [];
     }
+    this.data.detailedCaseStudies[project.id].gallery ??= [];
+    this.data.detailedCaseStudies[project.id].contentBlocks ??= [];
   }
   private targetId(link?: string): string | null {
     return link ? new URL(link, 'https://portfolio.local').searchParams.get('id') : null;

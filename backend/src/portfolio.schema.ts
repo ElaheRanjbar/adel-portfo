@@ -56,12 +56,19 @@ export const sectionSchema = object({
     object({ heading: text, text, image: url, caption: text.optional() }),
   ).optional(),
 });
+const contentBlock = z.discriminatedUnion('type', [
+  object({ id, type: z.literal('image'), image: url, note: text, width: z.enum(['full', 'wide', 'half']) }),
+  object({ id, type: z.literal('grid'), columns: z.union([z.literal(2), z.literal(3)]), images: list(object({ image: url, note: text })) }),
+  object({ id, type: z.literal('text'), title: text, text }),
+]);
 export const caseSchema = object({
   tags: tagIds,
   title: text,
   subtitle: text,
   leadSummary: text,
   heroImage: url,
+  gallery: list(object({ image: url, caption: text.optional() })).optional(),
+  contentBlocks: list(contentBlock).optional(),
   meta: list(object({ label: short, value: text })),
   sections: list(sectionSchema),
   nextProject: next.optional(),

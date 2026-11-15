@@ -21,6 +21,8 @@ const caseFields: Fields = {
   subtitle: 'subtitle',
   leadSummary: 'lead_summary',
   heroImage: 'hero_image',
+  gallery: 'gallery',
+  contentBlocks: 'content_blocks',
 };
 const nextFields: Fields = {
   title: 'title',
@@ -216,6 +218,8 @@ export class PortfolioRepository {
     for (const row of this.database.sql.prepare('SELECT * FROM case_studies').all()) {
       const id = row.id as string;
       const detail: any = { ...this.decode(row, caseFields), tags: this.tags('case_tags', id) };
+      detail.gallery = JSON.parse(detail.gallery || '[]');
+      detail.contentBlocks = JSON.parse(detail.contentBlocks || '[]');
       detail.meta = this.rows('case_metadata', 'WHERE case_id=?', id).map((meta) => ({
         label: meta.label,
         value: meta.value,
@@ -322,7 +326,7 @@ export class PortfolioRepository {
         this.writeTags('home_project_tags', project.id, project.tags);
       });
       for (const [id, detail] of Object.entries(data.detailedCaseStudies)) {
-        this.insert('case_studies', detail, caseFields, { id });
+        this.insert('case_studies', { ...detail, gallery: JSON.stringify(detail.gallery || []), contentBlocks: JSON.stringify(detail.contentBlocks || []) }, caseFields, { id });
         this.writeTags('case_tags', id, detail.tags);
         detail.meta.forEach((meta, position) =>
           this.insert(

@@ -86,6 +86,18 @@ export class Database implements OnModuleDestroy {
         this.sql.prepare('INSERT INTO migrations(version) VALUES(3)').run();
       });
     }
+    if (!this.sql.prepare('SELECT 1 FROM migrations WHERE version=4').get()) {
+      this.transaction(() => {
+        this.sql.exec("ALTER TABLE case_studies ADD COLUMN gallery TEXT NOT NULL DEFAULT '[]' CHECK(json_valid(gallery))");
+        this.sql.prepare('INSERT INTO migrations(version) VALUES(4)').run();
+      });
+    }
+    if (!this.sql.prepare('SELECT 1 FROM migrations WHERE version=5').get()) {
+      this.transaction(() => {
+        this.sql.exec("ALTER TABLE case_studies ADD COLUMN content_blocks TEXT NOT NULL DEFAULT '[]' CHECK(json_valid(content_blocks))");
+        this.sql.prepare('INSERT INTO migrations(version) VALUES(5)').run();
+      });
+    }
   }
   transaction<T>(operation: () => T): T {
     this.sql.exec('BEGIN IMMEDIATE');

@@ -27,6 +27,8 @@ export interface CaseStudy {
   subtitle: string;
   leadSummary: string;
   heroImage: string;
+  gallery?: { image: string; caption?: string }[];
+  contentBlocks?: CaseContentBlock[];
   meta: { label: string; value: string }[];
   sections: CaseSection[];
   nextProject?: {
@@ -38,6 +40,11 @@ export interface CaseStudy {
     description?: string;
   };
 }
+
+export type CaseContentBlock =
+  | { id: string; type: 'image'; image: string; note: string; width: 'full' | 'wide' | 'half' }
+  | { id: string; type: 'grid'; columns: 2 | 3; images: { image: string; note: string }[] }
+  | { id: string; type: 'text'; title: string; text: string };
 
 export interface PortfolioData {
   schemaVersion?: number;

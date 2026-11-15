@@ -53,6 +53,8 @@ export function normalizePortfolio(value: Partial<PortfolioData> = {}): Portfoli
     }
   }
   for (const detail of Object.values(data.detailedCaseStudies)) {
+    detail.gallery ??= [];
+    detail.contentBlocks ??= [];
     for (const section of detail.sections) {
       section.paragraphs ??= [];
       section.subsections ??= [];

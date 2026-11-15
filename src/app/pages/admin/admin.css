@@ -124,6 +124,8 @@
   margin-top: 24px;
   padding-top: 24px;
 }
+.canvas-block { padding: 18px; border: 1px solid #26334a; border-radius: 14px; background: #080d17; }
+.canvas-grid-item { border-top: 1px solid #26334a; margin-top: 18px; padding-top: 12px; }
 .admin-top-actions,
 .backup-actions,
 .inline-actions,

@@ -272,6 +272,58 @@
               </section>
               @if (currentDetail; as detail) {
                 <section class="editor-panel">
+                  <div class="panel-header">
+                    <div><h3>Case study canvas</h3><p class="muted">Build the story from image, photo grid and text blocks. Reorder blocks to control the public page layout.</p></div>
+                    <div class="inline-actions">
+                      <button type="button" class="admin-btn btn-secondary" (click)="addContentBlock(detail, 'image')">+ Image</button>
+                      <button type="button" class="admin-btn btn-secondary" (click)="addContentBlock(detail, 'grid')">+ Photo grid</button>
+                      <button type="button" class="admin-btn btn-secondary" (click)="addContentBlock(detail, 'text')">+ Text / note</button>
+                    </div>
+                  </div>
+                  @for (block of detail.contentBlocks || []; track block.id; let i = $index) {
+                    <div class="narrative-editor canvas-block">
+                      <div class="panel-header"><h4>{{ i + 1 }}. {{ block.type === 'grid' ? 'Photo grid' : block.type === 'image' ? 'Image' : 'Text / note' }}</h4>
+                        <div class="inline-actions">
+                          <button type="button" class="admin-btn btn-secondary" (click)="move(detail.contentBlocks!, i, -1)" [disabled]="i === 0" aria-label="Move block up">↑</button>
+                          <button type="button" class="admin-btn btn-secondary" (click)="move(detail.contentBlocks!, i, 1)" [disabled]="i === detail.contentBlocks!.length - 1" aria-label="Move block down">↓</button>
+                          <button type="button" class="admin-btn btn-danger" (click)="detail.contentBlocks!.splice(i, 1)">Remove</button>
+                        </div>
+                      </div>
+                      @if (block.type === 'image') {
+                        <app-media-field label="Image" [value]="block.image" (valueChange)="block.image = $event" />
+                        <label class="form-group"><span>Image width</span><select [(ngModel)]="block.width"><option value="full">Full width</option><option value="wide">Wide (75%)</option><option value="half">Half width</option></select></label>
+                        <label class="form-group"><span>Note / caption</span><textarea rows="2" [(ngModel)]="block.note" dir="auto"></textarea></label>
+                      } @else if (block.type === 'grid') {
+                        <label class="form-group"><span>Columns</span><select [(ngModel)]="block.columns"><option [ngValue]="2">2 columns</option><option [ngValue]="3">3 columns</option></select></label>
+                        @for (item of block.images; track $index; let j = $index) {
+                          <div class="canvas-grid-item"><div class="panel-header"><h5>Grid image {{ j + 1 }}</h5><button type="button" class="admin-btn btn-danger" (click)="block.images.splice(j, 1)" [disabled]="block.images.length <= 1">Remove</button></div>
+                            <app-media-field [label]="'Grid image ' + (j + 1)" [value]="item.image" (valueChange)="item.image = $event" />
+                            <label class="form-group"><span>Note / caption</span><input type="text" [(ngModel)]="item.note" dir="auto" /></label>
+                          </div>
+                        }
+                        <button type="button" class="admin-btn btn-secondary" (click)="addGridImage(block)">+ Add image</button>
+                      } @else {
+                        <label class="form-group"><span>Heading (optional)</span><input type="text" [(ngModel)]="block.title" dir="auto" /></label>
+                        <label class="form-group"><span>Text</span><textarea rows="5" [(ngModel)]="block.text" dir="auto"></textarea></label>
+                      }
+                    </div>
+                  } @empty { <p class="muted">Add blocks to compose a flexible case study layout.</p> }
+                </section>
+                <section class="editor-panel">
+                  <div class="panel-header">
+                    <h3>Case study image slider</h3>
+                    <button type="button" class="admin-btn btn-secondary" (click)="detail.gallery!.push({ image: '', caption: '' })">+ Add slide</button>
+                  </div>
+                  <p class="muted">Add images and optional captions. Slides appear below the case study introduction.</p>
+                  @for (slide of detail.gallery || []; track $index; let i = $index) {
+                    <div class="narrative-editor">
+                      <div class="panel-header"><h4>Slide {{ i + 1 }}</h4><button type="button" class="admin-btn btn-danger" (click)="detail.gallery!.splice(i, 1)">Remove</button></div>
+                      <app-media-field [label]="'Slide ' + (i + 1)" [value]="slide.image" (valueChange)="slide.image = $event" />
+                      <label class="form-group"><span>Caption / note</span><input type="text" [(ngModel)]="slide.caption" dir="auto" /></label>
+                    </div>
+                  }
+                </section>
+                <section class="editor-panel">
                   <h3>
                     Case study introduction<app-admin-help
                       title="Case study introduction"

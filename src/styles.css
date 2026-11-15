@@ -535,6 +535,39 @@ app-site-header nav {
   padding: 10px;
   min-width: 40px;
 }
+.rich-content figure.table:has(figure.image) {
+  width: 100%;
+  margin: 24px 0;
+  overflow: visible;
+}
+.rich-content figure.table:has(figure.image) > table {
+  width: 100%;
+  table-layout: fixed;
+  border-collapse: separate;
+  border-spacing: 16px 0;
+  margin-inline: -16px;
+}
+.rich-content figure.table:has(figure.image) td {
+  border: 0;
+  padding: 0;
+  vertical-align: top;
+}
+.rich-content figure.table:has(figure.image) figure.image {
+  display: block;
+  width: 100%;
+  margin: 0;
+}
+@media (max-width: 600px) {
+  .rich-content figure.table:has(figure.image) > table,
+  .rich-content figure.table:has(figure.image) > table tbody,
+  .rich-content figure.table:has(figure.image) > table tr,
+  .rich-content figure.table:has(figure.image) > table td {
+    display: block;
+    width: 100%;
+  }
+  .rich-content figure.table:has(figure.image) > table { margin: 0; }
+  .rich-content figure.table:has(figure.image) > table td + td { margin-top: 20px; }
+}
 .rich-content blockquote {
   border-inline-start: 3px solid var(--accent-blue);
   padding: 12px 20px;

@@ -28,6 +28,7 @@ import { SiteFooter } from '../../shared/site-footer/site-footer';
 export class ProjectDetail {
   readonly store = inject(PortfolioStore);
   readonly activeSection = signal('challenge');
+  readonly activeSlide = signal(0);
   private readonly element = inject<ElementRef<HTMLElement>>(ElementRef);
   private readonly destroyRef = inject(DestroyRef);
   private readonly route = inject(ActivatedRoute);
@@ -38,6 +39,7 @@ export class ProjectDetail {
     const projects = this.store.data().detailedCaseStudies;
     return projects[this.params().get('id') || 'case-1'];
   });
+  readonly gallerySlides = computed(() => this.project()?.gallery?.filter((slide) => !!slide.image) || []);
   constructor() {
     effect(() => this.activeSection.set(this.project()?.sections[0]?.id || ''));
     afterNextRender(() => {
@@ -71,5 +73,9 @@ export class ProjectDetail {
         cancelAnimationFrame(frame);
       });
     });
+  }
+  slideBy(offset: number): void {
+    const count = this.gallerySlides().length;
+    if (count) this.activeSlide.update((index) => (index + offset + count) % count);
   }
 }

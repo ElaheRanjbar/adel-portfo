@@ -26,6 +26,40 @@
         </div>
       }
     </div>
+    @for (block of project.contentBlocks || []; track block.id) {
+      @if (block.type === 'image') {
+        @if (block.image) {
+          <figure class="case-canvas-image" [class.width-wide]="block.width === 'wide'" [class.width-half]="block.width === 'half'">
+            <img [src]="block.image | mediaUrl" [alt]="block.note || project.title" loading="lazy" />
+            @if (block.note) { <figcaption>{{ block.note }}</figcaption> }
+          </figure>
+        }
+      } @else if (block.type === 'grid') {
+        <div class="case-photo-grid" [class.columns-three]="block.columns === 3">
+          @for (item of block.images; track $index) {
+            @if (item.image) { <figure><img [src]="item.image | mediaUrl" [alt]="item.note || project.title" loading="lazy" />@if (item.note) { <figcaption>{{ item.note }}</figcaption> }</figure> }
+          }
+        </div>
+      } @else {
+        <section class="case-canvas-text">@if (block.title) { <h2>{{ block.title }}</h2> }<p>{{ block.text }}</p></section>
+      }
+    }
+    @if (gallerySlides().length) {
+      <section class="case-gallery" aria-label="Case study image slider">
+        @let slides = gallerySlides();
+        @if (slides[activeSlide()]; as slide) {
+          <div class="case-gallery-frame">
+            <img [src]="slide.image | mediaUrl" [alt]="slide.caption || project.title" />
+            <button type="button" class="gallery-arrow gallery-prev" (click)="slideBy(-1)" aria-label="Previous image">‹</button>
+            <button type="button" class="gallery-arrow gallery-next" (click)="slideBy(1)" aria-label="Next image">›</button>
+          </div>
+          @if (slide.caption) { <p class="gallery-caption">{{ slide.caption }}</p> }
+          <div class="gallery-dots" aria-label="Choose image">
+            @for (item of slides; track $index) { <button type="button" [class.active]="$index === activeSlide()" (click)="activeSlide.set($index)" [attr.aria-label]="'Show image ' + ($index + 1)"></button> }
+          </div>
+        }
+      </section>
+    }
     <div class="detail-body-grid">
       <aside class="detail-sidebar">
         <div class="sidebar-nav-title">{{ store.data().content.overviewTitle }}</div>
